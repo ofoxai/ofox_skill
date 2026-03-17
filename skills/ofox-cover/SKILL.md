@@ -1,6 +1,12 @@
 ---
 name: ofox-cover
 description: Generate WeChat article cover images featuring a minimalist black-and-white comic-style fox character. Use when user asks to create a cover image for WeChat articles, or mentions "封面", "公众号封面", "ofox cover".
+license: MIT
+compatibility: Requires an OpenAI-compatible image generation API (e.g. Gemini, DALL-E, DashScope). Designed for Claude Code and compatible agents.
+metadata:
+  author: ofoxai
+  version: "1.0"
+  category: creative-design
 ---
 
 # ofox-cover - 公众号封面生成器
