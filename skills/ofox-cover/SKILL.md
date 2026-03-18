@@ -2,7 +2,7 @@
 name: ofox-cover
 description: Generate WeChat article cover images featuring a minimalist black-and-white comic-style fox character. Use when user asks to create a cover image for WeChat articles, or mentions "封面", "公众号封面", "ofox cover".
 license: MIT
-compatibility: Requires an OpenAI-compatible image generation API (e.g. Gemini, DALL-E, DashScope). Designed for Claude Code and compatible agents.
+compatibility: Requires a Gemini API key (GEMINI_API_KEY). Uses Gemini native generateContent API. Designed for Claude Code and compatible agents.
 metadata:
   author: ofoxai
   version: "1.0"
@@ -84,9 +84,11 @@ Use the template from `references/prompt-template.md` to construct the full prom
 
 Read `references/api-config.md` for the API endpoint, model, and request format.
 
-Call the configured image generation API with the constructed prompt. The API follows OpenAI-compatible format. Decode the base64 response and save as PNG.
+Call the Gemini `generateContent` API with the constructed prompt. See `references/api-config.md` for the exact endpoint, request format, and response parsing.
 
-**Users must configure their own API credentials before first use.** See `references/api-config.md` for setup instructions.
+Extract the image from `candidates[0].content.parts[].inlineData.data` (base64), decode and save as PNG.
+
+**Users must set `GEMINI_API_KEY` environment variable before first use.** See `references/api-config.md` for setup instructions.
 
 ### Step 6: Save output
 

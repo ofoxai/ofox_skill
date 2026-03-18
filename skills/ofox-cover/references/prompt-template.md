@@ -51,11 +51,19 @@ The fox is [ACTION] and [EXPRESSION]. [OBJECTS/ENVIRONMENT]. [TEXT BOX if any].
 - NO multiple characters (unless specifically requested)
 - Keep it SIMPLE — the charm is in the minimalism
 
-## Final JSON Format
+## Final Request Body
 
 ```json
 {
-  "prompt": "[full prompt text]",
-  "aspect_ratio": "16:9"
+  "contents": [{
+    "parts": [
+      {"text": "[full prompt text]"}
+    ]
+  }],
+  "generationConfig": {
+    "imageConfig": {
+      "aspectRatio": "16:9"
+    }
+  }
 }
 ```
