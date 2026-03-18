@@ -6,9 +6,9 @@ Before first use, configure your image generation API by setting the following e
 
 ## Image Generation Backend
 
-- **Endpoint**: `https://api.ofox.ai/gemini/v1/images/generations`
-- **Auth Header**: `Authorization: Bearer {OFOX_COVER_API_KEY}` (set via environment variable)
-- **Model**: `google/gemini-2.5-flash-image` (or `google/gemini-3.1-flash-image-preview`)
+- **Endpoint**: `{YOUR_API_ENDPOINT}` (e.g. `https://api.openai.com/v1/images/generations` or any OpenAI-compatible endpoint)
+- **Auth Header**: `Authorization: Bearer {YOUR_API_KEY}`
+- **Model**: `{YOUR_IMAGE_MODEL}` (e.g. `google/gemini-3.1-flash-image-preview`, `dall-e-3`, `gpt-image-1`, etc.)
 - **Size**: `1792x1024` (approximately 16:9)
 - **Response format**: base64 encoded image in `data[0].b64_json`
 
@@ -18,21 +18,11 @@ The API must follow OpenAI-compatible image generation format:
 
 ```json
 {
-  "model": "google/gemini-2.5-flash-image",
+  "model": "{YOUR_IMAGE_MODEL}",
   "prompt": "[full prompt text]",
   "size": "1792x1024"
 }
 ```
-
-## Environment Variable
-
-Set your API key as an environment variable:
-
-```bash
-export OFOX_COVER_API_KEY="your-api-key-here"
-```
-
-The key is stored in 1Password vault `openclaw`, item `gen-image-api-key`.
 
 ## Supported Backends
 
