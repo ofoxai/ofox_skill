@@ -1,0 +1,11 @@
+{
+  "name": "graphic-engine",
+  "version": "1.0.0",
+  "description": "Ofox AI 图文引擎 - 模板渲染 + 截图输出",
+  "scripts": {
+    "screenshot": "node screenshot.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

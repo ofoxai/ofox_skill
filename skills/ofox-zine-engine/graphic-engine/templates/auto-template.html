@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI资讯图文模板 - 自动排版</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+      background: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h3 { margin-bottom: 20px; color: #333; text-align: center; }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1400px;
+    }
+
+    /* 3:4 竖版卡片 - 无圆角，方便截图 */
+    .card {
+      width: 360px;
+      height: 480px;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 配色方案 - 统一padding确保小标题位置一致 */
+    .card-cover { background: #FDF8F3; color: #1a1a1a; padding: 32px 28px; display: flex; flex-direction: column; }
+    .card-content { background: #fff; color: #1a1a1a; padding: 32px 28px; display: flex; flex-direction: column; overflow: hidden; }
+    .card-points { background: #FDF8F3; color: #1a1a1a; padding: 32px 28px; }
+    .card-highlight { background: #fff; color: #1a1a1a; padding: 32px 28px; display: flex; flex-direction: column; overflow: hidden; }
+    .card-end { background: #FDF8F3; color: #1a1a1a; padding: 32px 28px; }
+
+    /* 封面 - 三等分布局 */
+    .cover-header { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 1; padding-bottom: 12px; }
+    .cover-tags { display: flex; gap: 8px; margin-bottom: 16px; justify-content: space-between; align-items: center; }
+    .cover-tag { display: inline-block; background: rgba(198, 93, 59, 0.12); color: #C65D3B; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .cover-title { font-size: 42px; font-weight: 800; line-height: 1.3; color: #1a1a1a; letter-spacing: -0.02em; }
+    .cover-subtitle { font-size: 16px; color: #666; line-height: 1.5; margin-top: 12px; }
+    .cover-line { position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #C65D3B, #E07A52); }
+
+    /* 封面关键词区域 - 占 1/3，顶部对齐 */
+    .cover-keywords {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding-top: 0px;
+      z-index: 1;
+    }
+    .keywords-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .cover-keyword {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(198, 93, 59, 0.8);
+      white-space: nowrap;
+    }
+    .cover-keyword::before {
+      content: "✓ ";
+    }
+
+    /* 封面Logo区域 - 占 1/3，底部对齐，往上移36px */
+    .cover-logos {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 28px;
+      padding-bottom: 36px;
+      z-index: 1;
+    }
+
+    /* 封面配图区域 */
+    .cover-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 20px 0;
+      z-index: 1;
+    }
+    .cover-image img {
+      max-width: 100%;
+      max-height: 140px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      object-fit: cover;
+    }
+    .cover-image-placeholder {
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, rgba(198,93,59,0.08) 0%, rgba(198,93,59,0.03) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed rgba(198,93,59,0.2);
+    }
+    .cover-image-placeholder span {
+      color: rgba(198,93,59,0.5);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .cover-logo-item {
+      width: 88px;
+      height: 88px;
+      background: #fff;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .cover-logo-item img, .cover-logo-item svg {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+    }
+    .cover-logo-item.large {
+      width: 110px;
+      height: 110px;
+      border-radius: 26px;
+    }
+    .cover-logo-item.large img, .cover-logo-item.large svg {
+      width: 83px;
+      height: 83px;
+    }
+
+    /* 内容 */
+    .section-tag { display: inline-block; background: #C65D3B; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(198, 93, 59, 0.3); }
+    .section-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; line-height: 1.4; }
+    .section-text { font-size: 15px; line-height: 1.85; color: #333; }
+    .section-image { display: flex; align-items: flex-start; justify-content: center; margin-top: 16px; }
+    .section-image-placeholder { width: 100%; height: 140px; background: linear-gradient(135deg, rgba(198,93,59,0.08) 0%, rgba(198,93,59,0.03) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(198,93,59,0.2); }
+    .section-image-placeholder span { color: rgba(198,93,59,0.4); font-size: 13px; }
+
+    /* 要点 */
+    .points-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 8px 0; }
+    .point-item { display: flex; gap: 14px; align-items: flex-start; }
+    .point-num { flex-shrink: 0; width: 29px; height: 29px; background: linear-gradient(135deg, #C65D3B, #E07A52); color: #fff; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .point-content { flex: 1; }
+    .point-title { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px; }
+    .point-desc { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* 强调 */
+    .highlight-box { background: #FDF8F3; border-radius: 12px; padding: 18px; border-left: 4px solid #C65D3B; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .highlight-text { font-size: 17px; font-weight: 700; color: #C65D3B; line-height: 1.45; }
+    .logic-list { display: flex; flex-direction: column; gap: 10px; }
+    .logic-item { display: flex; gap: 10px; align-items: flex-start; background: #FDF8F3; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .logic-icon { color: #C65D3B; font-size: 16px; margin-top: 2px; }
+    .logic-text { font-size: 13px; line-height: 1.6; color: #333; }
+    .insight-tip { margin-top: 16px; padding: 12px 14px; background: rgba(198,93,59,0.05); border-radius: 8px; font-size: 12px; color: #888; line-height: 1.5; }
+
+    /* 引用页 */
+    .quote-box { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 16px 0; overflow: hidden; }
+    .quote-text { font-size: 17px; font-weight: 600; color: #1a1a1a; line-height: 1.55; font-style: italic; }
+    .quote-source { font-size: 14px; color: #888; margin-top: 16px; }
+
+    /* 尾页 */
+    .card-end { display: flex; flex-direction: column; }
+    .end-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: #1a1a1a; }
+    .checklist-list { display: flex; flex-direction: column; gap: 12px; }
+    .checklist-item { display: flex; gap: 10px; align-items: flex-start; background: #fff; padding: 12px; border-radius: 10px; }
+    .check-icon { color: #C65D3B; font-size: 14px; font-weight: 700; }
+    .check-text { font-size: 13px; line-height: 1.4; color: #1a1a1a; font-weight: 500; }
+    .check-note { font-size: 11px; color: #888; margin-top: 2px; }
+    .end-main { flex: 1; overflow: hidden; }
+    .end-cta { margin-top: 12px; padding: 10px; background: rgba(198,93,59,0.06); border-radius: 8px; text-align: center; }
+    .end-cta-text { font-size: 12px; color: #C65D3B; font-weight: 500; }
+    .end-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.06); margin-top: auto; flex-shrink: 0; }
+    .end-logo { height: 28px; }
+    .end-logo img { height: 100%; width: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .end-slogan { font-size: 12px; color: #888; }
+
+  </style>
+</head>
+<body>
+
+
+<h3>预览效果</h3>
+<div class="container" id="output"></div>
+
+<script>
+// 示例数据 - 实际使用时由项目文件覆盖
+const defaultData = {
+  "tags": ["🔥 GitHub 爆款 · 36.1k stars"],
+  "title": "superpowers<br>让 AI 不再乱写代码",
+  "subtitle": "Claude Code 必装的开发流程框架",
+  "logos": [
+    { "name": "GitHub", "url": "assets/logos/github-black.png" },
+    { "name": "Claude", "url": "assets/logos/claude-color.png" },
+    { "name": "OpenAI", "url": "assets/logos/openai-black.png" }
+  ],
+  "keywords": ["Claude Code", "Codex", "OpenCode", "开源"],
+  "intro": {
+    "tag": "痛点",
+    "question": "AI 编程助手的核心问题",
+    "answer": "当前 AI 编程助手普遍缺乏工程化思维：跳过架构设计直接写代码、忽略单元测试、没有代码审查机制，导致输出质量不稳定。",
+    "flowChart": {
+      "title": "Superpowers 的解法",
+      "oldLabel": "普通 AI",
+      "oldSteps": ["接需求", "直接写", "出bug", "打补丁"],
+      "newLabel": "有 Superpowers",
+      "newSteps": ["讨论", "设计", "计划", "执行", "审查"]
+    }
+  },
+  "points": [
+    { "icon": "💬", "title": "Brainstorming 先行", "desc": "先讨论需求、拆解设计，确认后再动手" },
+    { "icon": "🤖", "title": "子Agent驱动开发", "desc": "每个任务派一个子Agent执行，主Agent审查" },
+    { "icon": "🧪", "title": "强制 TDD", "desc": "红-绿-重构：先写失败测试，再写最小代码" },
+    { "icon": "✅", "title": "内置代码审查", "desc": "任务之间自动审查，严重问题会阻断流程" }
+  ],
+  "quotes": [
+    {
+      "tag": "🔥 最大优势",
+      "text": "确认设计后放手让它跑，几小时后来收结果",
+      "source": "子 Agent 自主开发模式"
+    }
+  ],
+  "takeaway": {
+    "title": "Claude Code 安装",
+    "codeStyle": true,
+    "items": [
+      { "text": "/plugin marketplace add obra/superpowers-marketplace", "note": "Step 1: 注册市场" },
+      { "text": "/plugin install superpowers@superpowers-marketplace", "note": "Step 2: 安装插件" }
+    ]
+  },
+  "insight": {
+    "tag": "项目信息",
+    "core": "MIT 开源协议，目前支持三个平台",
+    "details": [
+      { "bold": "Claude Code", "text": "通过 Plugin Marketplace 安装" },
+      { "bold": "Codex", "text": "通过 prompt 引入远程配置" }
+    ],
+    "tip": "GitHub 仓库：github.com/obra/superpowers"
+  },
+  "footer": {
+    "cta": "💬 你被 AI 写的代码坑过吗？评论区聊聊",
+    "slogan": "ofox.ai 你的AI伙伴"
+  }
+};
+
+function render(customData) {
+  const data = customData || defaultData;
+
+  // 构建页面数组
+  const pages = [];
+  let pageNum = 0;
+
+  // 1. 封面页（必须）
+  pages.push({ type: 'cover', data: data });
+
+  // 2. 引子页（如果有）
+  if (data.intro) {
+    pages.push({ type: 'intro', data: data.intro });
+  }
+
+  // 3. 要点页（支持多页，在JSON中用pointsPages数组定义）
+  if (data.pointsPages && data.pointsPages.length > 0) {
+    data.pointsPages.forEach(pp => {
+      pages.push({ type: 'points', data: pp });
+    });
+  } else if (data.points && data.points.length > 0) {
+    // 兼容旧格式：单页要点
+    pages.push({
+      type: 'points',
+      data: {
+        label: data.pointsLabel || '要点',
+        count: data.points.length,
+        items: data.points
+      }
+    });
+  }
+
+  // 4. 引用/数据页（如果有，可多个）
+  if (data.quotes && data.quotes.length > 0) {
+    data.quotes.forEach(q => {
+      pages.push({ type: 'quote', data: q });
+    });
+  }
+
+  // 5. 洞察页（如果有）
+  if (data.insight) {
+    pages.push({ type: 'insight', data: data.insight });
+  }
+
+  // 6. 尾页（包含行动清单 + footer）
+  pages.push({
+    type: 'end',
+    data: {
+      takeaway: data.takeaway,
+      footer: data.footer || {}
+    }
+  });
+
+  const total = pages.length;
+
+  // 渲染各页面
+  const html = pages.map((page, idx) => {
+    const num = idx + 1;
+    switch (page.type) {
+      case 'cover':
+        return renderCover(page.data, num, total);
+      case 'intro':
+        return renderIntro(page.data, num, total);
+      case 'points':
+        return renderPoints(page, num, total);
+      case 'insight':
+        return renderInsight(page.data, num, total);
+      case 'quote':
+        return renderQuote(page.data, num, total);
+      case 'end':
+        return renderEnd(page.data, num, total);
+      default:
+        return '';
+    }
+  }).join('');
+
+  document.getElementById('output').innerHTML = html;
+
+  // 调整标题字号，避免尴尬换行
+  adjustTitleFontSize();
+}
+
+// 调整封面标题字号，避免最后一行只有1-2个字
+function adjustTitleFontSize() {
+  const titles = document.querySelectorAll('.cover-title');
+  titles.forEach(title => {
+    // 从CSS获取初始字号，而不是硬编码
+    let fontSize = parseInt(getComputedStyle(title).fontSize) || 35;
+    const maxFontSize = fontSize;
+
+    const singleLineHeight = fontSize * 1.3; // line-height: 1.3
+
+    // 如果高度超过单行，说明换行了，才需要缩小
+    while (title.scrollHeight > singleLineHeight * 1.5 && fontSize > 22) {
+      fontSize -= 1;
+      title.style.fontSize = fontSize + 'px';
+    }
+  });
+}
+
+// 封面页
+function renderCover(data, num, total) {
+  // 底部区域：优先 logos，其次 coverImage，都没有则显示占位
+  let bottomHtml = '';
+  if (data.logos && data.logos.length > 0) {
+    bottomHtml = `<div class="cover-logos">
+        ${data.logos.map(logo => `
+          <div class="cover-logo-item${data.logos.length === 1 ? ' large' : ''}">
+            <img src="${logo.url}" alt="${logo.name}" onerror="this.parentElement.innerHTML='<span style=\\'font-size:24px;font-weight:700;color:#C65D3B\\'>${logo.name.charAt(0)}</span>'">
+          </div>
+        `).join('')}
+      </div>`;
+  } else if (data.coverImage) {
+    bottomHtml = `<div class="cover-image">
+        <img src="${data.coverImage}" alt="配图">
+      </div>`;
+  } else {
+    bottomHtml = `<div class="cover-image">
+        <div class="cover-image-placeholder"><span>📷 配图位置</span></div>
+      </div>`;
+  }
+
+  // 关键词对称排列：偶数每行一半，奇数第一行多一个
+  let keywordsHtml = '';
+  if (data.keywords && data.keywords.length > 0) {
+    const kws = data.keywords;
+    const total = kws.length;
+    if (total <= 2) {
+      keywordsHtml = `<div class="cover-keywords">
+        <div class="keywords-row">${kws.map(kw => `<span class="cover-keyword">${kw}</span>`).join('')}</div>
+      </div>`;
+    } else {
+      const firstRowCount = Math.ceil(total / 2);
+      const firstRow = kws.slice(0, firstRowCount);
+      const secondRow = kws.slice(firstRowCount);
+      keywordsHtml = `<div class="cover-keywords">
+        <div class="keywords-row">${firstRow.map(kw => `<span class="cover-keyword">${kw}</span>`).join('')}</div>
+        <div class="keywords-row">${secondRow.map(kw => `<span class="cover-keyword">${kw}</span>`).join('')}</div>
+      </div>`;
+    }
+  }
+
+  // 支持 tag 为数组或字符串
+  const tagsHtml = Array.isArray(data.tags)
+    ? data.tags.map(t => `<span class="cover-tag">${t}</span>`).join('')
+    : (data.tag ? `<span class="cover-tag">${data.tag}</span>` : '');
+
+  // GitHub Star 徽章（内联到 tags 行右侧）
+  let starBadgeHtml = '';
+  if (data.starBadge) {
+    starBadgeHtml = `<div style="display:inline-flex;align-items:center;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;"><span style="padding:5px 10px;border-right:1px solid #d0d7de;display:flex;align-items:center;gap:4px;"><span style="color:#d4a72c;">★</span> Star</span><span style="padding:5px 10px;font-weight:600;color:#1f2328;">${data.starBadge}</span></div>`;
+  }
+
+  return `
+    <div class="card card-cover">
+      <div class="cover-line"></div>
+      <div class="cover-header">
+        <div class="cover-tags">${tagsHtml}${starBadgeHtml}</div>
+        <h1 class="cover-title">${data.title}</h1>
+        <p class="cover-subtitle">${data.subtitle}</p>
+      </div>
+      ${keywordsHtml}
+      ${bottomHtml}
+    </div>`;
+}
+
+// 引子页
+function renderIntro(data, num, total) {
+  let imageHtml = '';
+  if (data.workflow) {
+    // 渲染线性流程图
+    const steps = data.workflow.steps || [];
+    imageHtml = `
+      <div style="width:100%;padding:16px;background:linear-gradient(135deg,#FDF8F3 0%,#fff 100%);border-radius:12px;">
+        ${data.workflow.title ? `<div style="text-align:center;font-size:12px;font-weight:600;color:#C65D3B;margin-bottom:16px;">${data.workflow.title}</div>` : ''}
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">
+          ${steps.map((step, i) => `
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="background:#fff;border:2px solid #C65D3B;border-radius:8px;padding:8px 12px;text-align:center;min-width:60px;">
+                <div style="font-size:16px;margin-bottom:2px;">${step.icon || '📋'}</div>
+                <div style="font-size:11px;font-weight:600;color:#333;">${step.label}</div>
+              </div>
+              ${i < steps.length - 1 ? '<div style="color:#C65D3B;font-size:16px;font-weight:bold;">→</div>' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  } else if (data.flowChart) {
+    // 渲染流程对比图
+    imageHtml = `
+      <div style="width:100%;padding:12px;background:linear-gradient(135deg,#FDF8F3 0%,#fff 100%);border-radius:12px;">
+        <div style="text-align:center;font-size:11px;font-weight:600;color:#C65D3B;margin-bottom:12px;">${data.flowChart.title || '流程对比'}</div>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;padding:10px;border-radius:10px;background:#fff;border:1px dashed #ccc;">
+            <div style="font-size:10px;font-weight:600;margin-bottom:6px;color:#888;">❌ ${data.flowChart.oldLabel || '传统流程'}</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#666;flex-wrap:wrap;justify-content:center;">
+              ${data.flowChart.oldSteps.map((s, i) => i === 0 ? `<span style="background:#f5f5f5;padding:3px 6px;border-radius:4px;">${s}</span>` : `<span style="color:#999;">→</span><span style="background:#f5f5f5;padding:3px 6px;border-radius:4px;">${s}</span>`).join('')}
+            </div>
+          </div>
+          <div style="flex:1;padding:10px;border-radius:10px;background:rgba(198,93,59,0.03);border:2px solid #C65D3B;">
+            <div style="font-size:10px;font-weight:600;margin-bottom:6px;color:#C65D3B;">✅ ${data.flowChart.newLabel || '新流程'}</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#C65D3B;flex-wrap:wrap;justify-content:center;">
+              ${data.flowChart.newSteps.map((s, i) => i === 0 ? `<span style="background:rgba(198,93,59,0.1);padding:3px 6px;border-radius:4px;">${s}</span>` : `<span>→</span><span style="background:rgba(198,93,59,0.1);padding:3px 6px;border-radius:4px;">${s}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else if (data.image) {
+    imageHtml = `<img src="${data.image}" style="max-width:100%;max-height:140px;border-radius:12px;">`;
+  } else {
+    imageHtml = `<div class="section-image-placeholder"><span>配图位置</span></div>`;
+  }
+
+  return `
+    <div class="card card-content">
+      <span class="section-tag">${data.tag || '问题'}</span>
+      <h2 class="section-title">${data.question}</h2>
+      <p class="section-text">${data.answer}</p>
+      <div class="section-image">${imageHtml}</div>
+
+    </div>`;
+}
+
+// 要点页
+function renderPoints(page, num, total) {
+  const { label, count, items, startNum } = page.data;
+  const start = startNum || 1;
+  return `
+    <div class="card card-points">
+      <span class="section-tag">${label || '要点'}${count ? ` ${count} 条` : ''}</span>
+      <div class="points-section">
+        ${items.map((p, i) => `
+          <div class="point-item">
+            <span class="point-num" ${p.icon ? 'style="font-size:20px;"' : ''}>${p.icon || (start + i)}</span>
+            <div class="point-content">
+              <div class="point-title">${p.title}</div>
+              <div class="point-desc">${p.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>`;
+}
+
+// 洞察页
+function renderInsight(data, num, total) {
+  // 对比可视化
+  let comparisonHtml = '';
+  if (data.comparison) {
+    const { before, after } = data.comparison;
+    comparisonHtml = `
+      <div style="display:flex;gap:12px;margin:16px 0;">
+        <div style="flex:1;background:#f5f5f5;border-radius:12px;padding:14px;border:1px dashed #ccc;">
+          <div style="text-align:center;font-size:24px;margin-bottom:6px;">${before.icon}</div>
+          <div style="text-align:center;font-size:13px;font-weight:600;color:#666;margin-bottom:10px;">${before.label}</div>
+          ${before.traits.map(t => `<div style="font-size:12px;color:#888;padding:4px 0;border-bottom:1px solid #eee;">❌ ${t}</div>`).join('')}
+        </div>
+        <div style="flex:1;background:rgba(198,93,59,0.05);border-radius:12px;padding:14px;border:2px solid #C65D3B;">
+          <div style="text-align:center;font-size:24px;margin-bottom:6px;">${after.icon}</div>
+          <div style="text-align:center;font-size:13px;font-weight:600;color:#C65D3B;margin-bottom:10px;">${after.label}</div>
+          ${after.traits.map(t => `<div style="font-size:12px;color:#333;padding:4px 0;border-bottom:1px solid rgba(198,93,59,0.2);">✅ ${t}</div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // 详情列表（如果有）
+  let detailsHtml = '';
+  if (data.details && data.details.length > 0) {
+    detailsHtml = `
+      <div class="logic-list">
+        ${data.details.map(d => `
+          <div class="logic-item">
+            <span class="logic-icon">→</span>
+            <p class="logic-text"><strong>${d.bold}</strong><br>${d.text}</p>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  return `
+    <div class="card card-highlight">
+      <span class="section-tag">${data.tag || '背后逻辑'}</span>
+      <div class="highlight-box">
+        <p class="highlight-text">${data.core}</p>
+      </div>
+      ${comparisonHtml}
+      ${detailsHtml}
+      ${data.tip ? `<div class="insight-tip">💡 ${data.tip}</div>` : ''}
+
+    </div>`;
+}
+
+// 引用/数据页
+function renderQuote(data, num, total) {
+  const noteHtml = data.note ? data.note.replace(/\n/g, '<br>') : '';
+  return `
+    <div class="card card-content">
+      <span class="section-tag">${data.tag || '引用'}</span>
+      <div class="quote-box">
+        <p class="quote-text">"${data.text}"</p>
+        ${data.source ? `<p class="quote-source">— ${data.source}</p>` : ''}
+      </div>
+      ${noteHtml ? `<div class="section-text" style="margin-top:16px;font-size:13px;line-height:1.8;color:#444;">${noteHtml}</div>` : ''}
+      
+    </div>`;
+}
+
+// 尾页（行动清单 + footer）
+function renderEnd(data, num, total) {
+  const { takeaway, footer } = data;
+
+  // 判断是否为代码命令样式
+  const isCodeStyle = takeaway && takeaway.codeStyle;
+
+  let takeawayHtml = '';
+  if (takeaway) {
+    if (isCodeStyle) {
+      // 终端代码块样式
+      const verifyHtml = takeaway.verifyCommands ? `
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;">
+          <div style="color:#888;font-size:9px;margin-bottom:6px;"># 安装成功后可用命令：</div>
+          ${takeaway.verifyCommands.map(cmd => `<div style="color:#6A9955;font-size:10px;margin-bottom:2px;">${cmd}</div>`).join('')}
+        </div>
+      ` : '';
+
+      takeawayHtml = `
+        <h3 class="end-title">${takeaway.title}</h3>
+        <div style="background:#1e1e1e;border-radius:12px;padding:14px;font-family:'SF Mono',Consolas,monospace;">
+          <div style="display:flex;gap:6px;margin-bottom:10px;">
+            <span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;"></span>
+            <span style="width:10px;height:10px;border-radius:50%;background:#27ca40;"></span>
+          </div>
+          ${takeaway.items.map((item, i) => `
+            <div style="margin-bottom:8px;">
+              <div style="color:#888;font-size:9px;margin-bottom:2px;"># ${item.note}</div>
+              <div style="color:#4EC9B0;font-size:11px;word-break:break-all;"><span style="color:#C586C0;">$</span> ${item.text}</div>
+            </div>
+          `).join('')}
+          ${verifyHtml}
+        </div>
+      `;
+    } else {
+      // 普通清单样式
+      takeawayHtml = `
+        <h3 class="end-title">${takeaway.title}</h3>
+        <div class="checklist-list">
+          ${takeaway.items.map(item => `
+            <div class="checklist-item">
+              <span class="check-icon">✓</span>
+              <div>
+                <p class="check-text">${item.text}</p>
+                ${item.note ? `<p class="check-note">${item.note}</p>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
+
+  return `
+    <div class="card card-end">
+      <div class="end-main">
+        ${takeawayHtml}
+        ${footer.cta ? `<div class="end-cta"><span class="end-cta-text">${footer.cta}</span></div>` : ''}
+      </div>
+      <div class="end-footer">
+        <div class="end-logo"><img src="assets/logos/OfoxAI-dark.png" alt="OFOX AI"></div>
+        <span class="end-slogan">${footer.slogan || 'ofox.ai 你的AI伙伴'}</span>
+      </div>
+      
+    </div>`;
+}
+
+// 初始渲染
+render();
+
+</script>
+
+</body>
+</html>

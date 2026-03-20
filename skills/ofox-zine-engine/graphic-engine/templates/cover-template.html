@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动海报模板 - 铜橙色</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+      background: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h3 { margin-bottom: 20px; color: #333; text-align: center; }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 设计调试面板 - 默认折叠 */
+    .design-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .design-panel .panel-content {
+      display: none;
+      width: 240px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      max-height: 80vh;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    .design-panel.expanded .panel-content { display: block; }
+
+    .design-panel h3 {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .design-panel label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
+    .design-panel input[type="range"] { width: 100%; margin-bottom: 4px; }
+    .design-panel .value { font-size: 11px; color: #999; margin-bottom: 12px; display: block; }
+
+    .design-panel .btn-toggle {
+      background: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .design-panel .btn-toggle:hover { background: #f9f9f9; }
+
+    .design-panel .btn-copy {
+      width: 100%;
+      margin-top: 8px;
+      background: #f5f5f5;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .design-panel .btn-copy:hover { background: #eee; }
+
+    /* 卡片样式 */
+    .card {
+      background: linear-gradient(145deg, #FFFDFB 0%, #FDF8F3 50%, #FAF0E8 100%);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--card-padding, 40px);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(198, 93, 59, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(198, 93, 59, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .card-vertical { width: 405px; height: 540px; }
+    .card-horizontal { width: 720px; height: 405px; flex-direction: row; padding: 45px 55px; }
+
+    .top-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: var(--topline-height, 5px);
+      background: linear-gradient(90deg, #C65D3B, #E07A52);
+    }
+
+    .ofox-watermark {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .ofox-watermark img { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
+    .ofox-watermark span { font-size: 14px; font-weight: 600; color: #C65D3B; letter-spacing: 0.5px; }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 1;
+      gap: var(--content-gap, 20px);
+    }
+
+    .main-content { display: flex; flex-direction: column; gap: 18px; }
+
+    .model-header { display: flex; align-items: center; gap: 12px; justify-content: center; }
+    .model-logo { width: var(--logo-size, 36px); height: var(--logo-size, 36px); }
+    .model-name { font-size: var(--title-size, 28px); font-weight: 800; color: #1a1a1a; }
+    .model-name .highlight { color: #C65D3B; }
+
+    .model-desc-list { display: flex; flex-direction: column; gap: var(--desc-gap, 8px); max-width: 300px; }
+    .model-desc-item { display: flex; align-items: center; gap: 10px; font-size: var(--desc-size, 13px); color: #555; line-height: 1.5; }
+    .desc-icon { width: 6px; height: 6px; background: #C65D3B; border-radius: 50%; flex-shrink: 0; }
+
+    .cta-section { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: var(--cta-margin, 8px); }
+    .cta-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #C65D3B, #A84D2F);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(198, 93, 59, 0.35);
+    }
+    .cta-text { font-size: var(--cta-size, 15px); color: #fff; font-weight: 700; }
+
+    .footer-url {
+      position: absolute;
+      bottom: 20px;
+      font-size: 13px;
+      color: #C65D3B;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+
+    /* 横版布局 */
+    .horizontal-layout { display: flex; width: 100%; height: 100%; z-index: 1; }
+    .left-content { width: 38%; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding-right: 20px; }
+    .left-content .model-header { justify-content: flex-start; }
+    .left-content .model-desc-list { align-items: flex-start; }
+    .left-content .cta-section { align-items: flex-start; }
+
+    .right-image { width: 62%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .right-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top left;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    .card-horizontal .footer-url { left: 40px; bottom: 20px; }
+
+    /* 提示文字 */
+    .hint {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 设计调试面板 - 默认折叠 -->
+<div class="design-panel" id="designPanel">
+  <button class="btn-toggle" onclick="togglePanel()">⚙️ 调整</button>
+  <div class="panel-content">
+    <h3>📐 元素调整</h3>
+
+    <label>标题字号</label>
+    <input type="range" id="titleSize" min="20" max="40" value="30" oninput="updateDesign()">
+    <span class="value" id="titleSizeVal">30px</span>
+
+    <label>Logo大小</label>
+    <input type="range" id="logoSize" min="24" max="56" value="40" oninput="updateDesign()">
+    <span class="value" id="logoSizeVal">40px</span>
+
+    <label>描述字号</label>
+    <input type="range" id="descSize" min="11" max="18" value="14" oninput="updateDesign()">
+    <span class="value" id="descSizeVal">14px</span>
+
+    <label>描述行间距</label>
+    <input type="range" id="descGap" min="4" max="16" value="10" oninput="updateDesign()">
+    <span class="value" id="descGapVal">10px</span>
+
+    <label>CTA字号</label>
+    <input type="range" id="ctaSize" min="12" max="20" value="16" oninput="updateDesign()">
+    <span class="value" id="ctaSizeVal">16px</span>
+
+    <label>CTA上边距</label>
+    <input type="range" id="ctaMargin" min="0" max="24" value="10" oninput="updateDesign()">
+    <span class="value" id="ctaMarginVal">10px</span>
+
+    <label>内边距</label>
+    <input type="range" id="cardPadding" min="24" max="70" value="45" oninput="updateDesign()">
+    <span class="value" id="cardPaddingVal">45px</span>
+
+    <label>内容间距</label>
+    <input type="range" id="contentGap" min="12" max="36" value="22" oninput="updateDesign()">
+    <span class="value" id="contentGapVal">22px</span>
+
+    <label>顶部色条</label>
+    <input type="range" id="toplineHeight" min="0" max="10" value="5" oninput="updateDesign()">
+    <span class="value" id="toplineHeightVal">5px</span>
+
+    <button class="btn-copy" onclick="copyValues()">📋 复制当前数值</button>
+  </div>
+</div>
+
+<!-- 海报预览 -->
+<div class="container">
+  <!-- 竖版 3:4 -->
+  <div class="card card-vertical">
+    <div class="top-line"></div>
+    <div class="ofox-watermark">
+      <img src="../logos/OfoxAI-light.png" alt="Ofox">
+      <span>ofox</span>
+    </div>
+    <div class="content">
+      <div class="main-content">
+        <div class="model-header">
+          <img src="../images/kimi-color.svg" class="model-logo" alt="Logo">
+          <span class="model-name">Kimi <span class="highlight">K2.5</span></span>
+        </div>
+        <div class="model-desc-list">
+          <div class="model-desc-item"><span class="desc-icon"></span>Agent Swarm 架构</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>100 个 AI 并行工作</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>比单 Agent 快 4.5 倍</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>代码能力达 Claude 水准</div>
+        </div>
+        <div class="cta-section">
+          <div class="cta-btn">
+            <span class="cta-text">模型上线 立即使用</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="footer-url">ofox.ai</span>
+  </div>
+
+  <!-- 横版 16:9 -->
+  <div class="card card-horizontal">
+    <div class="top-line"></div>
+    <div class="ofox-watermark">
+      <img src="../logos/OfoxAI-light.png" alt="Ofox">
+      <span>ofox</span>
+    </div>
+    <div class="horizontal-layout">
+      <div class="left-content">
+        <div class="model-header">
+          <img src="../images/kimi-color.svg" class="model-logo" alt="Logo">
+          <span class="model-name">Kimi <span class="highlight">K2.5</span></span>
+        </div>
+        <div class="model-desc-list">
+          <div class="model-desc-item"><span class="desc-icon"></span>Agent Swarm 架构</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>100 个 AI 并行工作</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>比单 Agent 快 4.5 倍</div>
+          <div class="model-desc-item"><span class="desc-icon"></span>代码能力达 Claude 水准</div>
+        </div>
+      </div>
+      <div class="right-image">
+        <img src="../images/20260127-185519.png" alt="Preview">
+      </div>
+    </div>
+    <span class="footer-url">ofox.ai</span>
+  </div>
+</div>
+
+<p class="hint">截图命令：node screenshot.js templates/cover-template.html cover-output</p>
+
+<script>
+function updateDesign() {
+  const root = document.documentElement;
+  const ids = ['titleSize', 'logoSize', 'descSize', 'descGap', 'ctaSize', 'ctaMargin', 'cardPadding', 'contentGap', 'toplineHeight'];
+
+  ids.forEach(id => {
+    const val = document.getElementById(id).value;
+    root.style.setProperty('--' + id.replace(/([A-Z])/g, '-$1').toLowerCase(), val + 'px');
+    document.getElementById(id + 'Val').textContent = val + 'px';
+  });
+}
+
+function copyValues() {
+  const ids = ['titleSize', 'logoSize', 'descSize', 'descGap', 'ctaSize', 'ctaMargin', 'cardPadding', 'contentGap', 'toplineHeight'];
+  const css = ids.map(id => {
+    const name = '--' + id.replace(/([A-Z])/g, '-$1').toLowerCase();
+    return `${name}: ${document.getElementById(id).value}px;`;
+  }).join('\n');
+
+  navigator.clipboard.writeText(css).then(() => { alert('CSS变量已复制！'); });
+}
+
+function togglePanel() {
+  const panel = document.getElementById('designPanel');
+  const btn = panel.querySelector('.btn-toggle');
+  panel.classList.toggle('expanded');
+  btn.textContent = panel.classList.contains('expanded') ? '✕ 关闭' : '⚙️ 调整';
+}
+
+updateDesign();
+</script>
+
+</body>
+</html>

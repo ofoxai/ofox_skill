@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI资讯图文 - Zine 剪报风格</title>
+  <!--
+    OFFLINE TEMPLATE for Puppeteer screenshot rendering.
+    All data is hardcoded JSON from trusted source. Not a web application.
+  -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=ZCOOL+KuaiLe&family=Caveat:wght@400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, "PingFang SC", sans-serif;
+      background: #d4d0c8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    h3 { margin-bottom: 20px; color: #666; text-align: center; }
+    .container {
+      display: flex; flex-wrap: wrap; gap: 24px;
+      justify-content: center; max-width: 1400px;
+    }
+    .card {
+      width: 360px; height: 480px;
+      border-radius: 0; overflow: hidden;
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+
+    /* ============================
+       ZINE 风格 — 报纸 + 便签 + 气泡 + 手帐
+       ============================ */
+
+    /* 网格纸底纹 */
+    .paper-bg {
+      background-color: #f5f3ed;
+      background-image:
+        linear-gradient(rgba(198,93,59,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(198,93,59,0.06) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* 报纸底纹 */
+    .news-bg { background-color: #faf8f2; }
+
+    /* 牛皮纸底纹 */
+    .kraft-bg {
+      background-color: #e8dcc8;
+      background-image:
+        url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");
+    }
+
+    /* 红线本底纹 */
+    .ruled-bg {
+      background-color: #faf8f2;
+      background-image:
+        repeating-linear-gradient(
+          transparent, transparent 23px,
+          rgba(198,93,59,0.12) 23px, rgba(198,93,59,0.12) 24px
+        );
+      background-position: 0 40px;
+    }
+
+    /* === 报头/Masthead === */
+    .masthead {
+      padding: 10px 20px 7px;
+      border-bottom: 3px double #1a1a1a;
+      text-align: center;
+    }
+    .masthead-title {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 13px; font-weight: 900;
+      letter-spacing: 0.3em; color: #1a1a1a;
+      text-transform: uppercase;
+    }
+    .masthead-date {
+      font-size: 9px; color: #999;
+      margin-top: 1px; letter-spacing: 0.1em;
+    }
+    .masthead-rule {
+      height: 1px; background: #1a1a1a; margin-top: 4px;
+    }
+
+    /* === 迷你报头（内页用） === */
+    .mini-masthead {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 20px;
+      border-bottom: 1px solid #ddd;
+      font-size: 9px; color: #aaa; letter-spacing: 0.1em;
+      font-family: 'Noto Serif SC', Georgia, serif;
+    }
+
+    /* === 报纸标题区 === */
+    .headline-area { padding: 10px 20px 8px; }
+    .headline {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 30px; font-weight: 900;
+      line-height: 1.2; color: #1a1a1a;
+      letter-spacing: -0.01em;
+    }
+    .subheadline {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 12px; color: #666;
+      margin-top: 4px; line-height: 1.4; font-style: italic;
+    }
+
+    /* === 便签/Sticky Note === */
+    .sticky {
+      background: #fff9c4;
+      padding: 12px 14px; margin: 0 20px;
+      position: relative;
+      box-shadow: 2px 3px 8px rgba(0,0,0,0.1);
+      transform: rotate(-1.5deg);
+    }
+    .sticky::before {
+      content: '';
+      position: absolute;
+      top: -6px; left: 50%; transform: translateX(-50%);
+      width: 40px; height: 12px;
+      background: rgba(198,93,59,0.25);
+      border-radius: 1px;
+    }
+    .sticky-text {
+      font-family: 'ZCOOL KuaiLe', cursive, "PingFang SC", sans-serif;
+      font-size: 14px; color: #333; line-height: 1.6;
+    }
+    .sticky-pink { background: #fce4ec; transform: rotate(1deg); }
+    .sticky-blue { background: #e3f2fd; transform: rotate(-0.5deg); }
+    .sticky-green { background: #e8f5e9; transform: rotate(1.5deg); }
+    .sticky-orange { background: #fff3e0; transform: rotate(-1deg); }
+
+    /* === 气泡/Chat Bubble === */
+    .bubble-wrap {
+      padding: 0 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .bubble {
+      max-width: 85%;
+      padding: 10px 14px; border-radius: 16px;
+      font-size: 13px; line-height: 1.6; position: relative;
+    }
+    .bubble-left {
+      background: #fff; border: 1px solid #e0e0e0;
+      align-self: flex-start; border-bottom-left-radius: 4px;
+    }
+    .bubble-right {
+      background: #C65D3B; color: #fff;
+      align-self: flex-end; border-bottom-right-radius: 4px;
+    }
+    .bubble-name {
+      font-size: 10px; font-weight: 600;
+      margin-bottom: 2px; color: #C65D3B;
+    }
+    .bubble-right .bubble-name { color: rgba(255,255,255,0.7); }
+
+    /* === 剪报/Clipping === */
+    .clipping {
+      margin: 0 20px;
+      padding: 14px 16px; background: #fff;
+      border: 1px solid #ddd;
+      position: relative;
+      box-shadow: 1px 2px 6px rgba(0,0,0,0.06);
+    }
+    .clipping::after {
+      content: '';
+      position: absolute; top: -4px; right: 12px;
+      width: 30px; height: 8px;
+      background: rgba(198,93,59,0.3);
+      transform: rotate(2deg);
+    }
+    .clipping-title {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 15px; font-weight: 700;
+      color: #1a1a1a; margin-bottom: 6px; line-height: 1.4;
+    }
+    .clipping-text {
+      font-size: 12px; color: #555; line-height: 1.7;
+    }
+
+    /* === 高亮标注 === */
+    .highlight-mark {
+      background: linear-gradient(transparent 60%, rgba(255,235,59,0.4) 60%);
+      padding: 0 2px;
+    }
+
+    /* === 手绘下划线 === */
+    .hand-underline {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='8'%3E%3Cpath d='M0 6 Q 25 0, 50 5 T 100 4 T 150 5 T 200 3' fill='none' stroke='%23C65D3B' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: repeat-x;
+      background-position: bottom;
+      background-size: 100px 6px;
+      padding-bottom: 6px;
+    }
+
+    /* === 回形针 === */
+    .paperclip {
+      position: absolute;
+      width: 20px; height: 40px;
+      border: 2px solid #999;
+      border-radius: 0 10px 10px 0;
+      border-left: none;
+      top: -10px; right: 20px;
+    }
+    .paperclip::before {
+      content: '';
+      position: absolute;
+      width: 12px; height: 28px;
+      border: 2px solid #999;
+      border-radius: 0 6px 6px 0;
+      border-left: none;
+      top: 4px; left: -4px;
+    }
+
+    /* === 邮票 === */
+    .stamp {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 2px dashed #C65D3B;
+      background: #faf8f2;
+      font-size: 11px; font-weight: 700;
+      color: #C65D3B;
+      transform: rotate(-3deg);
+    }
+    .stamp-value {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 20px; line-height: 1;
+    }
+
+    /* === 邮戳 === */
+    .postmark {
+      position: absolute;
+      width: 60px; height: 60px;
+      border: 2px solid rgba(198,93,59,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transform: rotate(-15deg);
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 8px; font-weight: 700;
+      color: rgba(198,93,59,0.3);
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    .postmark::before {
+      content: '';
+      position: absolute;
+      width: 50px; height: 50px;
+      border: 1px solid rgba(198,93,59,0.15);
+      border-radius: 50%;
+    }
+
+    /* === 标签打印机/Label === */
+    .label-tag {
+      display: inline-block;
+      background: #1a1a1a; color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 4px 12px 4px 8px;
+      letter-spacing: 0.08em;
+      position: relative;
+      text-transform: uppercase;
+    }
+    .label-tag::after {
+      content: '';
+      position: absolute; right: -6px; top: 0;
+      border: 11px solid transparent;
+      border-left: 6px solid #1a1a1a;
+    }
+
+    /* === 分栏布局 === */
+    .two-col {
+      display: flex; gap: 12px;
+      padding: 0 20px;
+    }
+    .two-col > * { flex: 1; }
+    .col-divider {
+      width: 1px; background: #ddd;
+      align-self: stretch;
+    }
+
+    /* === 手写字体 === */
+    .handwriting {
+      font-family: 'Caveat', 'ZCOOL KuaiLe', cursive;
+    }
+
+    /* === 编号圈 === */
+    .num-circle {
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #C65D3B; color: #fff;
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 12px; font-weight: 900;
+    }
+
+    /* === Tag === */
+    .zine-tag {
+      display: inline-block;
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 11px; font-weight: 700;
+      color: #C65D3B;
+      border: 1.5px solid #C65D3B;
+      padding: 3px 10px; letter-spacing: 0.05em;
+    }
+
+    /* === 数据卡片 === */
+    .data-card {
+      background: #fff; border-radius: 0;
+      padding: 10px 14px;
+      border-left: 3px solid #C65D3B;
+    }
+    .data-number {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 28px; font-weight: 900;
+      color: #C65D3B; line-height: 1;
+    }
+    .data-label {
+      font-size: 11px; color: #888; margin-top: 4px;
+    }
+
+    /* === 拍立得 === */
+    .polaroid {
+      background: #fff;
+      padding: 8px 8px 28px;
+      box-shadow: 2px 3px 10px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+    .polaroid-inner {
+      background: #e8e0d4;
+      width: 100%; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+    }
+    .polaroid-caption {
+      font-family: 'Caveat', 'ZCOOL KuaiLe', cursive;
+      font-size: 13px; color: #555;
+      margin-top: 8px;
+    }
+
+    /* === 分类广告 === */
+    .classified {
+      border: 2px solid #1a1a1a;
+      padding: 12px 14px;
+      margin: 0 20px;
+    }
+    .classified-header {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 10px; font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 4px; margin-bottom: 8px;
+    }
+    .classified-body {
+      font-size: 11px; color: #333;
+      line-height: 1.6;
+      column-count: 2; column-gap: 12px;
+      column-rule: 1px solid #ddd;
+    }
+
+    /* === 页脚 === */
+    .zine-footer {
+      display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      padding: 10px 20px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      margin-top: auto;
+    }
+    .zine-footer img { height: 22px; width: auto; border-radius: 4px; }
+    .zine-footer span { font-size: 11px; color: #999; }
+
+    /* === Washi tape 装饰 === */
+    .washi {
+      height: 14px;
+      background: repeating-linear-gradient(
+        45deg, transparent, transparent 4px,
+        rgba(198,93,59,0.1) 4px, rgba(198,93,59,0.1) 8px
+      );
+      margin: 0 20px;
+    }
+    .washi-blue {
+      background: repeating-linear-gradient(
+        -45deg, transparent, transparent 4px,
+        rgba(66,133,244,0.12) 4px, rgba(66,133,244,0.12) 8px
+      );
+    }
+
+    /* === 红色笔迹圈 === */
+    .red-circle {
+      display: inline-block;
+      border: 2.5px solid rgba(198,93,59,0.5);
+      border-radius: 50% 45% 50% 48%;
+      padding: 2px 10px;
+      transform: rotate(-2deg);
+    }
+
+    /* === 漫画条 === */
+    .comic-strip {
+      display: flex; gap: 5px;
+      padding: 0 20px; margin-top: 6px;
+      align-items: center;
+    }
+    .comic-arrow {
+      font-size: 14px; color: #C65D3B;
+      flex-shrink: 0;
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+    }
+    .comic-panel {
+      flex: 1;
+      background: #fff;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 4px;
+      padding: 6px 4px 4px;
+      text-align: center;
+      position: relative;
+    }
+    .comic-panel::before {
+      content: attr(data-num);
+      position: absolute;
+      top: -1px; left: -1px;
+      background: #1a1a1a; color: #fff;
+      font-size: 7px; font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 0 0 4px 0;
+    }
+    .comic-face {
+      font-size: 24px;
+      line-height: 1.1;
+      margin-bottom: 1px;
+    }
+    .comic-caption {
+      font-family: 'ZCOOL KuaiLe', cursive;
+      font-size: 9px;
+      color: #333;
+      line-height: 1.3;
+    }
+    .comic-thought {
+      position: absolute;
+      top: -2px; right: 4px;
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    /* === 撕纸边 === */
+    .torn-top {
+      position: relative;
+    }
+    .torn-top::before {
+      content: '';
+      position: absolute; top: -8px; left: 0; right: 0;
+      height: 8px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 8'%3E%3Cpath d='M0 8 L5 3 L12 7 L20 2 L28 6 L35 1 L42 5 L50 2 L58 7 L65 3 L72 6 L80 1 L88 5 L95 2 L102 7 L110 3 L118 6 L125 1 L132 5 L140 2 L148 7 L155 3 L162 6 L170 1 L178 5 L185 2 L192 7 L200 3 L208 6 L215 1 L222 5 L230 2 L238 7 L245 3 L252 6 L260 1 L268 5 L275 2 L282 7 L290 3 L298 6 L305 1 L312 5 L320 2 L328 7 L335 3 L342 6 L350 1 L358 5 L360 3 L360 8 Z' fill='%23f5f3ed'/%3E%3C/svg%3E") no-repeat;
+      background-size: 100% 100%;
+    }
+
+  </style>
+</head>
+<body>
+
+<h3>Zine 剪报风格预览</h3>
+<div class="container" id="output"></div>
+
+<script>
+var defaultData = {
+  "tags": ["\ud83e\uddec 自我进化 Agent"],
+  "title": "Hermes Agent",
+  "titleLine2": "越用越聪明的 AI 助手",
+  "subtitle": "NousResearch · 5.4k⭐ · MIT",
+  "starBadge": "5.4k",
+  "date": "2026.03.12",
+  "edition": "No.312",
+  "logos": [
+    { "name": "GitHub", "url": "assets/logos/github-black.png" }
+  ],
+  "keywords": ["自我进化", "持久记忆", "多模型", "开源"],
+  "comic": [
+    { "face": "🤖", "caption": "第一次", "thought": "❓" },
+    { "face": "🤖💡", "caption": "学会了！沉淀技能", "thought": "📝" },
+    { "face": "🤖⚡", "caption": "下次秒杀", "thought": "🏆" }
+  ],
+  "intro": {
+    "tag": "现状",
+    "question": "现在的 Agent 都是一次性的",
+    "answer": "给任务，做完，结束。下次同样的问题，从头来过。",
+    "stickyNote": "每次都像第一天上班的实习生…",
+    "flowChart": {
+      "title": "Hermes Agent 的差异",
+      "oldLabel": "普通 Agent",
+      "oldSteps": ["接任务", "执行", "返回", "遗忘"],
+      "newLabel": "Hermes Agent",
+      "newSteps": ["接任务", "执行", "沉淀技能", "下次复用"]
+    }
+  },
+  "points": [
+    { "icon": "🧠", "title": "自动生成技能", "desc": "复杂问题解完自动写成技能文档" },
+    { "icon": "💬", "title": "多渠道通信", "desc": "Telegram / Slack / Discord 等 5 平台" },
+    { "icon": "🔄", "title": "模型随意切", "desc": "200+ 模型不绑厂商，一行切换" },
+    { "icon": "💰", "title": "$5/月就能跑", "desc": "VPS 部署，Modal 空闲近零成本" },
+    { "icon": "🛡️", "title": "安全沙箱", "desc": "只读 root + 命名空间隔离" }
+  ],
+  "quotes": [
+    {
+      "text": "Agent 的核心竞争力不是模型能力，而是经验积累",
+      "source": "技能沉淀 + 持久记忆 = 复利效应",
+      "bullets": [
+        "技能可跨实例共享：你的 Agent 学会的，别人直接用",
+        "社区技能库可直接导入，格式统一不绑框架",
+        "两层记忆：Honcho 用户建模 + FTS5 对话搜索"
+      ],
+      "annotation": "不是一个 SDK，是服务器上的常驻进程"
+    }
+  ],
+  "stats": [
+    { "number": "5.4k", "label": "收藏", "icon": "⭐" },
+    { "number": "73", "label": "贡献者", "icon": "👥" },
+    { "number": "40+", "label": "内置工具", "icon": "🔧" },
+    { "number": "$5", "label": "月运行成本", "icon": "💰" }
+  ],
+  "insight": {
+    "tag": "深度拆解",
+    "core": "不是 SDK，是服务器上的常驻进程",
+    "details": [
+      { "bold": "执行后端", "text": "Local / Docker / SSH / Modal" },
+      { "bold": "记忆机制", "text": "Honcho 建模 + FTS5 搜索" },
+      { "bold": "内置工具", "text": "40+（终端/文件/浏览器）" },
+      { "bold": "技能格式", "text": "SKILL.md 开放标准" },
+      { "bold": "系统支持", "text": "Linux / macOS / WSL2" }
+    ],
+    "comparison": [
+      { "label": "运行方式", "self": "服务器常驻", "other1": "本地网关", "other2": "CLI" },
+      { "label": "技能进化", "self": "自动生成", "other1": "手动配置", "other2": "手动配置" },
+      { "label": "模型绑定", "self": "无", "other1": "无", "other2": "Anthropic" }
+    ],
+    "compNames": ["Hermes", "OpenClaw", "Claude Code"],
+    "pros": ["MIT 开源，完全可控", "模型不锁定，随时切", "技能可导出，团队复用"],
+    "cons": ["需自行部署 VPS", "社区生态仍在早期"],
+    "verdict": "适合想掌控 Agent 全流程的开发者和团队"
+  },
+  "takeaway": {
+    "title": "一行命令安装",
+    "codeStyle": true,
+    "items": [
+      { "text": "curl -fsSL https://.../install.sh | bash", "note": "一行安装全部依赖" },
+      { "text": "hermes model", "note": "切换模型" },
+      { "text": "hermes chat", "note": "开始对话" }
+    ],
+    "verifyCommands": ["通过 ofox.ai 接入多模型，成本更低"],
+    "links": [
+      { "label": "GitHub 仓库", "url": "NousResearch/hermes-agent" },
+      { "label": "技能标准", "url": "agentskills.io" },
+      { "label": "模型接口", "url": "ofox.ai" }
+    ]
+  },
+  "footer": {
+    "cta": "Agent 的核心竞争力是模型、工具还是经验？",
+    "slogan": "ofox.ai 你的AI伙伴",
+    "hashtags": ["#AI日报", "#Agent", "#开源", "#NousResearch"]
+  }
+};
+
+function esc(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(s));
+  return d.innerHTML;
+}
+
+function render(customData) {
+  var data = customData || defaultData;
+  var output = document.getElementById('output');
+  output.textContent = '';
+
+  // 1. 封面：报头 + 大标题 + 邮票 + 便签
+  output.appendChild(buildCover(data));
+
+  // 2. 对话页：气泡 + 便签对比
+  if (data.intro) output.appendChild(buildChat(data));
+
+  // 3. 剪报页：编号剪报卡片
+  if (data.points) output.appendChild(buildClippings(data));
+
+  // 4. 深度拆解页：技术规格 + 对比 + 优劣
+  if (data.insight) output.appendChild(buildNewspaperPage(data));
+
+  // 5. 引用页：大引文 + 手写批注
+  if (data.quotes) data.quotes.forEach(function(q) { output.appendChild(buildQuotePage(q)); });
+
+  // 7. 尾页：终端 + 气泡CTA
+  output.appendChild(buildEndPage(data));
+}
+
+/* ===== 封面：报纸头版 + 邮票 + 便签 ===== */
+function buildCover(data) {
+  var card = document.createElement('div');
+  card.className = 'card news-bg';
+
+  // 报头
+  var mh = document.createElement('div');
+  mh.className = 'masthead';
+  var mTitle = document.createElement('div');
+  mTitle.className = 'masthead-title';
+  mTitle.textContent = 'OFOX AI 日报';
+  mh.appendChild(mTitle);
+  var mDate = document.createElement('div');
+  mDate.className = 'masthead-date';
+  mDate.textContent = (data.date || '2026.03.12') + (data.edition ? '  ·  ' + data.edition : '');
+  mh.appendChild(mDate);
+  var mRule = document.createElement('div');
+  mRule.className = 'masthead-rule';
+  mh.appendChild(mRule);
+  card.appendChild(mh);
+
+  // 标题区
+  var ha = document.createElement('div');
+  ha.className = 'headline-area';
+
+  // Tags 行 + 邮票
+  var topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px;';
+
+  var tagWrap = document.createElement('div');
+  tagWrap.style.cssText = 'display:flex; gap:6px; flex-wrap:wrap;';
+  (Array.isArray(data.tags) ? data.tags : [data.tags]).forEach(function(t) {
+    var tag = document.createElement('span');
+    tag.className = 'zine-tag';
+    tag.textContent = t;
+    tagWrap.appendChild(tag);
+  });
+  topRow.appendChild(tagWrap);
+
+  // 右上角邮票（star 数）
+  if (data.starBadge) {
+    var stamp = document.createElement('div');
+    stamp.className = 'stamp';
+    var sv = document.createElement('span');
+    sv.className = 'stamp-value';
+    sv.textContent = data.starBadge;
+    stamp.appendChild(sv);
+    var sl = document.createElement('span');
+    sl.textContent = '★';
+    sl.style.fontSize = '14px';
+    stamp.appendChild(sl);
+    topRow.appendChild(stamp);
+  }
+  ha.appendChild(topRow);
+
+  var h1 = document.createElement('h1');
+  h1.className = 'headline';
+  h1.textContent = data.title;
+  ha.appendChild(h1);
+
+  if (data.titleLine2) {
+    var h2 = document.createElement('div');
+    h2.className = 'headline hand-underline';
+    h2.style.cssText = 'font-size:20px; margin-top:4px; color:#C65D3B; display:inline-block;';
+    h2.textContent = data.titleLine2;
+    ha.appendChild(h2);
+  }
+
+  if (data.subtitle) {
+    var sub = document.createElement('p');
+    sub.className = 'subheadline';
+    sub.textContent = data.subtitle;
+    ha.appendChild(sub);
+  }
+  card.appendChild(ha);
+
+  // 关键词：用 label-tag 标签机风格
+  if (data.keywords && data.keywords.length > 0) {
+    var kwWrap = document.createElement('div');
+    kwWrap.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; padding:0 20px; margin-top:2px;';
+    data.keywords.forEach(function(kw) {
+      var label = document.createElement('span');
+      label.className = 'label-tag';
+      label.textContent = kw;
+      kwWrap.appendChild(label);
+    });
+    card.appendChild(kwWrap);
+  }
+
+  // 漫画条：居中在空白区域
+  if (data.comic && data.comic.length > 0) {
+    var spacer1 = document.createElement('div');
+    spacer1.style.flex = '1';
+    card.appendChild(spacer1);
+
+    var strip = document.createElement('div');
+    strip.className = 'comic-strip';
+
+    data.comic.forEach(function(panel, i) {
+      var p = document.createElement('div');
+      p.className = 'comic-panel';
+      p.setAttribute('data-num', i + 1);
+
+      if (panel.thought) {
+        var thought = document.createElement('span');
+        thought.className = 'comic-thought';
+        thought.textContent = panel.thought;
+        p.appendChild(thought);
+      }
+
+      var face = document.createElement('div');
+      face.className = 'comic-face';
+      face.textContent = panel.face;
+      p.appendChild(face);
+
+      var cap = document.createElement('div');
+      cap.className = 'comic-caption';
+      cap.textContent = panel.caption;
+      p.appendChild(cap);
+
+      strip.appendChild(p);
+
+      // 画面之间加手绘箭头
+      if (i < data.comic.length - 1) {
+        var arrow = document.createElement('span');
+        arrow.className = 'comic-arrow';
+        arrow.textContent = '→';
+        strip.appendChild(arrow);
+      }
+    });
+
+    card.appendChild(strip);
+  }
+
+  // 数据挂件：牛皮纸小卡片贴在封面底部
+  if (data.stats && data.stats.length > 0) {
+    var spacer2 = document.createElement('div');
+    spacer2.style.flex = '1';
+    card.appendChild(spacer2);
+
+    var widget = document.createElement('div');
+    widget.style.cssText = 'margin:0 16px 6px; background:#e8dcc8; padding:8px 10px; box-shadow:2px 3px 8px rgba(0,0,0,0.1); transform:rotate(0.5deg); position:relative;';
+
+    // 胶带装饰
+    var tape = document.createElement('div');
+    tape.style.cssText = 'position:absolute; top:-6px; left:20px; width:50px; height:12px; background:rgba(198,93,59,0.2); transform:rotate(-2deg); border-radius:1px;';
+    widget.appendChild(tape);
+
+    var statsRow = document.createElement('div');
+    statsRow.style.cssText = 'display:flex; justify-content:space-between; gap:4px;';
+
+    data.stats.forEach(function(stat) {
+      var cell = document.createElement('div');
+      cell.style.cssText = 'text-align:center; flex:1;';
+      var num = document.createElement('div');
+      num.style.cssText = 'font-family:"Noto Serif SC",Georgia,serif; font-size:16px; font-weight:900; color:#C65D3B; line-height:1.2;';
+      num.textContent = stat.number;
+      cell.appendChild(num);
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:9px; color:#888; margin-top:2px; white-space:nowrap;';
+      label.textContent = stat.label;
+      cell.appendChild(label);
+      statsRow.appendChild(cell);
+    });
+
+    widget.appendChild(statsRow);
+    card.appendChild(widget);
+  }
+
+  // 底部 logo 横条
+  if (data.logos && data.logos.length > 0) {
+    var logoBar = document.createElement('div');
+    logoBar.style.cssText = 'display:flex; gap:10px; padding:6px 20px; border-top:1px solid #ddd; align-items:center;';
+    data.logos.forEach(function(logo) {
+      var img = document.createElement('img');
+      img.src = logo.url; img.alt = logo.name;
+      img.style.cssText = 'height:20px; width:auto; opacity:0.6;';
+      img.onerror = function() { this.style.display = 'none'; };
+      logoBar.appendChild(img);
+    });
+    card.appendChild(logoBar);
+  }
+
+  return card;
+}
+
+/* ===== 对话页：气泡 + 便签对比 ===== */
+function buildChat(data) {
+  var card = document.createElement('div');
+  card.className = 'card paper-bg';
+  card.style.padding = '0';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+
+  // 迷你报头
+  var miniMH = document.createElement('div');
+  miniMH.className = 'mini-masthead';
+  miniMH.textContent = 'OFOX AI 日报';
+  var pageSpan = document.createElement('span');
+  pageSpan.textContent = '第 2 页';
+  miniMH.appendChild(pageSpan);
+  card.appendChild(miniMH);
+
+  // Washi tape 装饰
+  var washi = document.createElement('div');
+  washi.className = 'washi';
+  card.appendChild(washi);
+
+  var spacer1 = document.createElement('div');
+  spacer1.style.height = '12px';
+  card.appendChild(spacer1);
+
+  // 顶部标签
+  var tagWrap = document.createElement('div');
+  tagWrap.style.padding = '0 20px 10px';
+  var tag = document.createElement('span');
+  tag.className = 'zine-tag';
+  tag.textContent = data.intro.tag || '问题';
+  tagWrap.appendChild(tag);
+  card.appendChild(tagWrap);
+
+  var bw = document.createElement('div');
+  bw.className = 'bubble-wrap';
+  bw.style.flex = '1';
+
+  // 问题（左侧气泡）
+  var b1 = document.createElement('div');
+  b1.className = 'bubble bubble-left';
+  var n1 = document.createElement('div');
+  n1.className = 'bubble-name'; n1.textContent = '🤔 疑问';
+  b1.appendChild(n1);
+  b1.appendChild(document.createTextNode(data.intro.question));
+  bw.appendChild(b1);
+
+  // 回答（右侧气泡）
+  var b2 = document.createElement('div');
+  b2.className = 'bubble bubble-right';
+  var n2 = document.createElement('div');
+  n2.className = 'bubble-name'; n2.textContent = '💡 现状';
+  b2.appendChild(n2);
+  b2.appendChild(document.createTextNode(data.intro.answer));
+  bw.appendChild(b2);
+
+  // 流程对比用便签贴
+  if (data.intro.flowChart) {
+    var fc = data.intro.flowChart;
+
+    // 标题便签
+    var titleSticky = document.createElement('div');
+    titleSticky.className = 'sticky sticky-orange';
+    titleSticky.style.cssText += '; margin:8px 0 4px; padding:6px 12px;';
+    var tsText = document.createElement('div');
+    tsText.className = 'sticky-text';
+    tsText.style.cssText = 'font-size:13px; font-weight:700;';
+    tsText.textContent = '📌 ' + fc.title;
+    titleSticky.appendChild(tsText);
+    bw.appendChild(titleSticky);
+
+    // 旧流程
+    var s1 = document.createElement('div');
+    s1.className = 'sticky sticky-pink';
+    s1.style.cssText += '; margin:4px 0; padding:8px 12px;';
+    var s1t = document.createElement('div');
+    s1t.className = 'sticky-text';
+    s1t.style.fontSize = '12px';
+    s1t.textContent = '❌ ' + fc.oldLabel + '：' + fc.oldSteps.join(' → ');
+    s1.appendChild(s1t);
+    bw.appendChild(s1);
+
+    // 新流程
+    var s2 = document.createElement('div');
+    s2.className = 'sticky sticky-green';
+    s2.style.cssText += '; margin:4px 0; padding:8px 12px;';
+    var s2t = document.createElement('div');
+    s2t.className = 'sticky-text';
+    s2t.style.fontSize = '12px';
+    s2t.textContent = '✅ ' + fc.newLabel + '：' + fc.newSteps.join(' → ');
+    s2.appendChild(s2t);
+    bw.appendChild(s2);
+  }
+
+  card.appendChild(bw);
+  return card;
+}
+
+/* ===== 剪报页：编号卡片 + 胶带 ===== */
+function buildClippings(data) {
+  var card = document.createElement('div');
+  card.className = 'card paper-bg';
+  card.style.padding = '0';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+
+  // 迷你报头
+  var miniMH = document.createElement('div');
+  miniMH.className = 'mini-masthead';
+  miniMH.textContent = 'OFOX AI 日报';
+  var pageSpan = document.createElement('span');
+  pageSpan.textContent = '第 3 页';
+  miniMH.appendChild(pageSpan);
+  card.appendChild(miniMH);
+
+  var content = document.createElement('div');
+  content.style.cssText = 'flex:1; display:flex; flex-direction:column; gap:5px; padding:8px 0;';
+
+  // 标签
+  var tagWrap = document.createElement('div');
+  tagWrap.style.padding = '0 20px 2px';
+  var tagEl = document.createElement('span');
+  tagEl.className = 'label-tag';
+  tagEl.textContent = '核心亮点';
+  tagWrap.appendChild(tagEl);
+  content.appendChild(tagWrap);
+
+  data.points.forEach(function(p, i) {
+    var clip = document.createElement('div');
+    clip.className = 'clipping';
+    clip.style.cssText += '; position:relative; padding:10px 14px;';
+
+    // 编号圆
+    var num = document.createElement('span');
+    num.className = 'num-circle';
+    num.textContent = i + 1;
+    num.style.cssText = 'position:absolute; top:-4px; left:-4px; z-index:1; width:20px; height:20px; font-size:10px;';
+    clip.appendChild(num);
+
+    var titleDiv = document.createElement('div');
+    titleDiv.className = 'clipping-title';
+    titleDiv.style.cssText = 'padding-left:18px; font-size:14px; margin-bottom:3px;';
+    titleDiv.textContent = (p.icon || '') + ' ' + p.title;
+    clip.appendChild(titleDiv);
+
+    var descDiv = document.createElement('div');
+    descDiv.className = 'clipping-text';
+    descDiv.style.fontSize = '11px';
+    descDiv.textContent = p.desc;
+    clip.appendChild(descDiv);
+
+    // 交替微旋转
+    if (i % 2 === 1) {
+      clip.style.transform = 'rotate(0.5deg)';
+    } else if (i % 3 === 2) {
+      clip.style.transform = 'rotate(-0.3deg)';
+    }
+
+    content.appendChild(clip);
+  });
+
+  card.appendChild(content);
+  return card;
+}
+
+/* ===== 引用页：大引文 + 要点展开 + 手写批注 ===== */
+function buildQuotePage(q) {
+  var card = document.createElement('div');
+  card.className = 'card news-bg';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+  card.style.padding = '0';
+  card.style.position = 'relative';
+
+  // 迷你报头
+  var miniMH = document.createElement('div');
+  miniMH.className = 'mini-masthead';
+  miniMH.textContent = 'OFOX AI 日报';
+  var ps = document.createElement('span');
+  ps.textContent = '第 5 页';
+  miniMH.appendChild(ps);
+  card.appendChild(miniMH);
+
+  var body = document.createElement('div');
+  body.style.cssText = 'flex:1; display:flex; flex-direction:column; padding:16px 24px; gap:10px;';
+
+  // 回形针装饰
+  var clip = document.createElement('div');
+  clip.className = 'paperclip';
+  card.appendChild(clip);
+
+  // 大引号 + 引文
+  var quoteWrap = document.createElement('div');
+  quoteWrap.style.cssText = 'background:#fff; padding:14px 16px; border-left:4px solid #C65D3B; box-shadow:1px 2px 6px rgba(0,0,0,0.06);';
+  var mark = document.createElement('span');
+  mark.style.cssText = 'font-family:Georgia,serif; font-size:48px; color:rgba(198,93,59,0.2); line-height:0.6; float:left; margin-right:6px; margin-top:4px;';
+  mark.textContent = '\u201c';
+  quoteWrap.appendChild(mark);
+  var text = document.createElement('p');
+  text.style.cssText = 'font-family:"Noto Serif SC",Georgia,serif; font-size:18px; font-weight:700; color:#1a1a1a; line-height:1.5;';
+  text.textContent = q.text;
+  quoteWrap.appendChild(text);
+  if (q.source) {
+    var src = document.createElement('p');
+    src.style.cssText = 'font-size:12px; color:#C65D3B; font-weight:600; margin-top:8px; clear:both;';
+    src.textContent = '— ' + q.source;
+    quoteWrap.appendChild(src);
+  }
+  body.appendChild(quoteWrap);
+
+  // 要点展开：剪报风格的 bullets
+  if (q.bullets && q.bullets.length > 0) {
+    var washi = document.createElement('div');
+    washi.className = 'washi';
+    washi.style.margin = '0';
+    body.appendChild(washi);
+
+    q.bullets.forEach(function(b, i) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex; gap:10px; align-items:flex-start; padding:6px 0;';
+      if (i < q.bullets.length - 1) row.style.borderBottom = '1px dashed #ddd';
+      var num = document.createElement('span');
+      num.className = 'num-circle';
+      num.style.cssText += '; width:20px; height:20px; font-size:10px; flex-shrink:0; margin-top:2px;';
+      num.textContent = i + 1;
+      row.appendChild(num);
+      var txt = document.createElement('span');
+      txt.style.cssText = 'font-size:13px; color:#333; line-height:1.5;';
+      txt.textContent = b;
+      row.appendChild(txt);
+      body.appendChild(row);
+    });
+  }
+
+  // 底部手写批注
+  if (q.annotation) {
+    var annoWrap = document.createElement('div');
+    annoWrap.style.cssText = 'margin-top:auto;';
+    var anno = document.createElement('div');
+    anno.className = 'sticky sticky-green';
+    anno.style.margin = '0';
+    var annoText = document.createElement('div');
+    annoText.className = 'sticky-text';
+    annoText.style.cssText = 'font-size:14px; text-align:center;';
+    annoText.textContent = '👆 ' + q.annotation;
+    anno.appendChild(annoText);
+    annoWrap.appendChild(anno);
+    body.appendChild(annoWrap);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+/* ===== 深度拆解页：技术规格 + 优劣对比 + 结论 ===== */
+function buildNewspaperPage(data) {
+  var card = document.createElement('div');
+  card.className = 'card paper-bg';
+  card.style.padding = '0';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+
+  // 迷你报头
+  var miniMH = document.createElement('div');
+  miniMH.className = 'mini-masthead';
+  miniMH.textContent = 'OFOX AI 日报';
+  var pageSpan = document.createElement('span');
+  pageSpan.textContent = '第 4 页';
+  miniMH.appendChild(pageSpan);
+  card.appendChild(miniMH);
+
+  var content = document.createElement('div');
+  content.style.cssText = 'flex:1; display:flex; flex-direction:column; gap:6px; padding:8px 0;';
+
+  var ins = data.insight;
+
+  // 标签
+  var tagWrap = document.createElement('div');
+  tagWrap.style.padding = '0 20px';
+  var tagEl = document.createElement('span');
+  tagEl.className = 'zine-tag';
+  tagEl.textContent = ins.tag || '深度拆解';
+  tagWrap.appendChild(tagEl);
+  content.appendChild(tagWrap);
+
+  // 技术规格：紧凑分类广告框
+  if (ins.details) {
+    var classified = document.createElement('div');
+    classified.className = 'classified';
+    classified.style.padding = '8px 12px';
+    var cHeader = document.createElement('div');
+    cHeader.className = 'classified-header';
+    cHeader.style.cssText += '; margin-bottom:5px; padding-bottom:3px;';
+    cHeader.textContent = '—— 技术规格 ——';
+    classified.appendChild(cHeader);
+
+    ins.details.forEach(function(d) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex; gap:6px; align-items:baseline; margin-bottom:2px;';
+      var bold = document.createElement('span');
+      bold.style.cssText = 'font-size:10px; font-weight:700; color:#C65D3B; white-space:nowrap;';
+      bold.textContent = '▸ ' + d.bold;
+      row.appendChild(bold);
+      var txt = document.createElement('span');
+      txt.style.cssText = 'font-size:10px; color:#555; line-height:1.3;';
+      txt.textContent = d.text;
+      row.appendChild(txt);
+      classified.appendChild(row);
+    });
+    content.appendChild(classified);
+  }
+
+  // 竞品对比：迷你报纸表格
+  if (ins.comparison) {
+    var tableWrap = document.createElement('div');
+    tableWrap.style.cssText = 'padding:0 20px;';
+    var table = document.createElement('div');
+    table.style.cssText = 'background:#fff; border:1px solid #ddd; overflow:hidden;';
+
+    // 表头
+    var names = ins.compNames || ['本项目', '竞品A', '竞品B'];
+    var thead = document.createElement('div');
+    thead.style.cssText = 'display:flex; background:#1a1a1a; color:#fff; font-size:10px; font-weight:700;';
+    var thEmpty = document.createElement('div');
+    thEmpty.style.cssText = 'flex:0.8; padding:8px 6px;';
+    thead.appendChild(thEmpty);
+    names.forEach(function(n, i) {
+      var th = document.createElement('div');
+      th.style.cssText = 'flex:1; padding:8px 4px; text-align:center;';
+      if (i === 0) th.style.color = '#f0a080';
+      th.textContent = n;
+      thead.appendChild(th);
+    });
+    table.appendChild(thead);
+
+    // 数据行
+    ins.comparison.forEach(function(row, ri) {
+      var tr = document.createElement('div');
+      tr.style.cssText = 'display:flex; font-size:10px; border-top:1px solid #eee;';
+      if (ri % 2 === 1) tr.style.background = '#faf8f2';
+      var label = document.createElement('div');
+      label.style.cssText = 'flex:0.8; padding:8px 6px; font-weight:700; color:#333;';
+      label.textContent = row.label;
+      tr.appendChild(label);
+      var selfCell = document.createElement('div');
+      selfCell.style.cssText = 'flex:1; padding:8px 4px; text-align:center; color:#C65D3B; font-weight:700;';
+      selfCell.textContent = row.self;
+      tr.appendChild(selfCell);
+      var o1 = document.createElement('div');
+      o1.style.cssText = 'flex:1; padding:8px 4px; text-align:center; color:#999;';
+      o1.textContent = row.other1;
+      tr.appendChild(o1);
+      var o2 = document.createElement('div');
+      o2.style.cssText = 'flex:1; padding:8px 4px; text-align:center; color:#999;';
+      o2.textContent = row.other2;
+      tr.appendChild(o2);
+      table.appendChild(tr);
+    });
+
+    tableWrap.appendChild(table);
+    content.appendChild(tableWrap);
+  }
+
+  // 优劣对比：两张并排便签
+  if (ins.pros || ins.cons) {
+    var compareRow = document.createElement('div');
+    compareRow.style.cssText = 'display:flex; gap:6px; padding:0 16px;';
+
+    if (ins.pros) {
+      var proSticky = document.createElement('div');
+      proSticky.className = 'sticky sticky-green';
+      proSticky.style.cssText += '; flex:1; margin:0; transform:rotate(-1deg); padding:8px 10px;';
+      var proTitle = document.createElement('div');
+      proTitle.className = 'sticky-text';
+      proTitle.style.cssText = 'font-size:11px; font-weight:700; margin-bottom:4px;';
+      proTitle.textContent = '✅ 优势';
+      proSticky.appendChild(proTitle);
+      ins.pros.forEach(function(p) {
+        var item = document.createElement('div');
+        item.style.cssText = 'font-size:10px; color:#333; line-height:1.4; padding-left:8px; text-indent:-8px;';
+        item.textContent = '· ' + p;
+        proSticky.appendChild(item);
+      });
+      compareRow.appendChild(proSticky);
+    }
+
+    if (ins.cons) {
+      var conSticky = document.createElement('div');
+      conSticky.className = 'sticky sticky-pink';
+      conSticky.style.cssText += '; flex:1; margin:0; transform:rotate(1deg); padding:8px 10px;';
+      var conTitle = document.createElement('div');
+      conTitle.className = 'sticky-text';
+      conTitle.style.cssText = 'font-size:11px; font-weight:700; margin-bottom:4px;';
+      conTitle.textContent = '⚠️ 不足';
+      conSticky.appendChild(conTitle);
+      ins.cons.forEach(function(c) {
+        var item = document.createElement('div');
+        item.style.cssText = 'font-size:10px; color:#333; line-height:1.4; padding-left:8px; text-indent:-8px;';
+        item.textContent = '· ' + c;
+        conSticky.appendChild(item);
+      });
+      compareRow.appendChild(conSticky);
+    }
+
+    content.appendChild(compareRow);
+  }
+
+  // 结论
+  if (ins.verdict) {
+    var verdictWrap = document.createElement('div');
+    verdictWrap.style.cssText = 'padding:0 20px;';
+    var verdictBox = document.createElement('div');
+    verdictBox.style.cssText = 'display:flex; align-items:center; gap:8px; padding:8px 12px; background:#fff; border:2px solid #C65D3B;';
+    var verdictIcon = document.createElement('span');
+    verdictIcon.style.cssText = 'font-size:18px; flex-shrink:0;';
+    verdictIcon.textContent = '📋';
+    verdictBox.appendChild(verdictIcon);
+    var verdictText = document.createElement('span');
+    verdictText.style.cssText = 'font-family:"Noto Serif SC",Georgia,serif; font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.3;';
+    verdictText.textContent = ins.verdict;
+    verdictBox.appendChild(verdictText);
+    verdictWrap.appendChild(verdictBox);
+    content.appendChild(verdictWrap);
+  }
+
+  card.appendChild(content);
+  return card;
+}
+
+/* ===== 尾页：终端 + 相关链接 + CTA + 页脚 ===== */
+function buildEndPage(data) {
+  var card = document.createElement('div');
+  card.className = 'card paper-bg';
+  card.style.padding = '0';
+  card.style.display = 'flex';
+  card.style.flexDirection = 'column';
+
+  // 迷你报头
+  var miniMH = document.createElement('div');
+  miniMH.className = 'mini-masthead';
+  miniMH.textContent = 'OFOX AI 日报';
+  var pageSpan = document.createElement('span');
+  pageSpan.textContent = '末页';
+  miniMH.appendChild(pageSpan);
+  card.appendChild(miniMH);
+
+  var content = document.createElement('div');
+  content.style.cssText = 'flex:1; display:flex; flex-direction:column; padding:8px 0; gap:6px;';
+
+  var takeaway = data.takeaway;
+  if (takeaway) {
+    // 标签
+    var tagWrap = document.createElement('div');
+    tagWrap.style.padding = '0 20px';
+    var tag = document.createElement('span');
+    tag.className = 'label-tag';
+    tag.textContent = '开始使用';
+    tagWrap.appendChild(tag);
+    content.appendChild(tagWrap);
+
+    if (takeaway.codeStyle) {
+      // 终端贴纸（紧凑版）
+      var termWrap = document.createElement('div');
+      termWrap.style.cssText = 'margin:0 20px; background:#1e1e1e; border-radius:6px; padding:10px; font-family:"SF Mono",Consolas,monospace; transform:rotate(-0.5deg); box-shadow:2px 3px 8px rgba(0,0,0,0.15);';
+      var dots = document.createElement('div');
+      dots.style.cssText = 'display:flex; gap:5px; margin-bottom:6px;';
+      ['#ff5f56','#ffbd2e','#27ca40'].forEach(function(c) {
+        var dot = document.createElement('span');
+        dot.style.cssText = 'width:7px;height:7px;border-radius:50%;background:' + c + ';';
+        dots.appendChild(dot);
+      });
+      termWrap.appendChild(dots);
+
+      takeaway.items.forEach(function(item) {
+        var line = document.createElement('div');
+        line.style.marginBottom = '4px';
+        var note = document.createElement('div');
+        note.style.cssText = 'color:#888;font-size:8px;margin-bottom:1px;';
+        note.textContent = '# ' + item.note;
+        line.appendChild(note);
+        var cmd = document.createElement('div');
+        cmd.style.cssText = 'color:#4EC9B0;font-size:10px;word-break:break-all;';
+        var dollar = document.createElement('span');
+        dollar.style.color = '#C586C0';
+        dollar.textContent = '$ ';
+        cmd.appendChild(dollar);
+        cmd.appendChild(document.createTextNode(item.text));
+        line.appendChild(cmd);
+        termWrap.appendChild(line);
+      });
+      content.appendChild(termWrap);
+    }
+
+    // 相关链接（紧凑版）
+    if (takeaway.links && takeaway.links.length > 0) {
+      var linksWrap = document.createElement('div');
+      linksWrap.style.cssText = 'padding:0 20px;';
+      var linksBox = document.createElement('div');
+      linksBox.style.cssText = 'background:#fff; border:1px solid #ddd; padding:8px 12px;';
+
+      var linksTitle = document.createElement('div');
+      linksTitle.style.cssText = 'font-size:9px; font-weight:700; color:#999; letter-spacing:0.1em; margin-bottom:5px; font-family:"Noto Serif SC",Georgia,serif;';
+      linksTitle.textContent = '📎 相关链接';
+      linksBox.appendChild(linksTitle);
+
+      takeaway.links.forEach(function(link, i) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:2px 0;';
+        if (i < takeaway.links.length - 1) row.style.borderBottom = '1px dotted #eee';
+        var label = document.createElement('span');
+        label.style.cssText = 'font-size:11px; color:#333; font-weight:600;';
+        label.textContent = link.label;
+        row.appendChild(label);
+        var url = document.createElement('span');
+        url.style.cssText = 'font-size:9px; color:#C65D3B; font-family:"SF Mono",Consolas,monospace;';
+        url.textContent = link.url;
+        row.appendChild(url);
+        linksBox.appendChild(row);
+      });
+
+      linksWrap.appendChild(linksBox);
+      content.appendChild(linksWrap);
+    }
+  }
+
+  // CTA + hashtags
+  if (data.footer && data.footer.cta) {
+    var spacer = document.createElement('div');
+    spacer.style.flex = '1';
+    content.appendChild(spacer);
+
+    var ctaBox = document.createElement('div');
+    ctaBox.className = 'classified';
+    ctaBox.style.cssText += '; border-style:dashed;';
+    var ctaHeader = document.createElement('div');
+    ctaHeader.className = 'classified-header';
+    ctaHeader.textContent = '—— 今日话题 ——';
+    ctaBox.appendChild(ctaHeader);
+    var ctaText = document.createElement('div');
+    ctaText.style.cssText = 'font-family:"Noto Serif SC",Georgia,serif; font-size:12px; color:#333; text-align:center; line-height:1.5;';
+    ctaText.textContent = '💬 ' + data.footer.cta;
+    ctaBox.appendChild(ctaText);
+
+    // hashtags
+    if (data.footer.hashtags && data.footer.hashtags.length > 0) {
+      var hashWrap = document.createElement('div');
+      hashWrap.style.cssText = 'display:flex; gap:6px; justify-content:center; margin-top:8px; flex-wrap:wrap;';
+      data.footer.hashtags.forEach(function(h) {
+        var hashTag = document.createElement('span');
+        hashTag.style.cssText = 'font-size:10px; color:#C65D3B; background:rgba(198,93,59,0.08); padding:2px 8px; border-radius:10px;';
+        hashTag.textContent = h;
+        hashWrap.appendChild(hashTag);
+      });
+      ctaBox.appendChild(hashWrap);
+    }
+
+    content.appendChild(ctaBox);
+  }
+
+  card.appendChild(content);
+
+  // 页脚：双线报纸风格
+  var ft = document.createElement('div');
+  ft.className = 'zine-footer';
+  ft.style.borderTop = '3px double #1a1a1a';
+  var logoImg = document.createElement('img');
+  logoImg.src = 'assets/logos/OfoxAI-dark.png';
+  logoImg.alt = 'OFOX AI';
+  ft.appendChild(logoImg);
+  var slogan = document.createElement('span');
+  slogan.style.cssText = 'font-family:"Noto Serif SC",Georgia,serif; letter-spacing:0.05em;';
+  slogan.textContent = (data.footer && data.footer.slogan) || 'ofox.ai 你的AI伙伴';
+  ft.appendChild(slogan);
+  card.appendChild(ft);
+
+  return card;
+}
+
+render();
+</script>
+
+</body>
+</html>

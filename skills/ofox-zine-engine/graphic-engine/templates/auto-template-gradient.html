@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI资讯图文模板 - 渐变混色版（多配色）</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ========== 配色方案系统 ========== */
+
+    /* 默认主题：蓝色炫彩混色 */
+    body {
+      --primary-color: #4A90E2;
+      --primary-light: #64B5F6;
+      --primary-dark: #2979FF;
+      --accent-color: #FF4757;
+
+      --gradient-1: linear-gradient(135deg, #F1F9FE 0%, #E4F3E4 50%, #F0FAFE 100%);
+      --gradient-2: linear-gradient(135deg, #DDEFFD 0%, #F0DFF3 50%, #D9F2FE 100%);
+      --gradient-3: linear-gradient(135deg, #F0FAFE 0%, #DDEFFD 50%, #FEF2F6 100%);
+      --gradient-4: linear-gradient(135deg, #F1F9FE 0%, #D9F2FE 50%, #E4F3E4 100%);
+    }
+
+    /* 蓝色主题 - 炫彩混色（以蓝为主） */
+    body.theme-blue {
+      --primary-color: #4A90E2;
+      --primary-light: #64B5F6;
+      --primary-dark: #2979FF;
+
+      --gradient-1: linear-gradient(135deg, #F1F9FE 0%, #E4F3E4 50%, #F0FAFE 100%);
+      --gradient-2: linear-gradient(135deg, #DDEFFD 0%, #F0DFF3 50%, #D9F2FE 100%);
+      --gradient-3: linear-gradient(135deg, #F0FAFE 0%, #DDEFFD 50%, #FEF2F6 100%);
+      --gradient-4: linear-gradient(135deg, #F1F9FE 0%, #D9F2FE 50%, #E4F3E4 100%);
+    }
+
+    /* 粉色主题 - 炫彩混色（以粉为主） */
+    body.theme-pink {
+      --primary-color: #E91E63;
+      --primary-light: #F06292;
+      --primary-dark: #C2185B;
+
+      --gradient-1: linear-gradient(135deg, #FEF2F6 0%, #F0DFF3 50%, #FFF8FA 100%);
+      --gradient-2: linear-gradient(135deg, #FFF8FA 0%, #FFE5DD 50%, #FFEFDB 100%);
+      --gradient-3: linear-gradient(135deg, #FBDDE8 0%, #DDEFFD 50%, #FEF2F6 100%);
+      --gradient-4: linear-gradient(135deg, #FEF2F6 0%, #FFF8FA 50%, #F0DFF3 100%);
+    }
+
+    /* 绿色主题 - 炫彩混色（以绿为主） */
+    body.theme-green {
+      --primary-color: #4CAF50;
+      --primary-light: #66BB6A;
+      --primary-dark: #388E3C;
+
+      --gradient-1: linear-gradient(135deg, #E4F3E4 0%, #D9F2FE 50%, #F4FAF4 100%);
+      --gradient-2: linear-gradient(135deg, #F4FAF4 0%, #FFFCE2 50%, #E4F3E4 100%);
+      --gradient-3: linear-gradient(135deg, #D2EBD3 0%, #E4F3E4 50%, #DDEFFD 100%);
+      --gradient-4: linear-gradient(135deg, #F4FAF4 0%, #E4F3E4 50%, #D9F2FE 100%);
+    }
+
+    /* 紫色主题 - 炫彩混色（以紫为主） */
+    body.theme-purple {
+      --primary-color: #9C27B0;
+      --primary-light: #BA68C8;
+      --primary-dark: #7B1FA2;
+
+      --gradient-1: linear-gradient(135deg, #F0DFF3 0%, #FEF2F6 50%, #F9F2FA 100%);
+      --gradient-2: linear-gradient(135deg, #F9F2FA 0%, #DDEFFD 50%, #F0DFF3 100%);
+      --gradient-3: linear-gradient(135deg, #E6C9EC 0%, #F0DFF3 50%, #D9F2FE 100%);
+      --gradient-4: linear-gradient(135deg, #F0DFF3 0%, #F9F2FA 50%, #FEF2F6 100%);
+    }
+
+    /* 黄色主题 - 炫彩混色（以黄为主） */
+    body.theme-yellow {
+      --primary-color: #FFC107;
+      --primary-light: #FFD54F;
+      --primary-dark: #FFA000;
+
+      --gradient-1: linear-gradient(135deg, #FFFCE2 0%, #E4F3E4 50%, #FFFEF3 100%);
+      --gradient-2: linear-gradient(135deg, #FFFEF3 0%, #FFE5DD 50%, #FFFACD 100%);
+      --gradient-3: linear-gradient(135deg, #FFFACD 0%, #FFFCE2 50%, #FFEFDB 100%);
+      --gradient-4: linear-gradient(135deg, #FFFCE2 0%, #FFFEF3 50%, #E4F3E4 100%);
+    }
+
+    /* 青色主题 - 炫彩混色（以青为主） */
+    body.theme-cyan {
+      --primary-color: #00BCD4;
+      --primary-light: #4DD0E1;
+      --primary-dark: #0097A7;
+
+      --gradient-1: linear-gradient(135deg, #D9F5F9 0%, #E4F3E4 50%, #EFFBFD 100%);
+      --gradient-2: linear-gradient(135deg, #EFFBFD 0%, #DDEFFD 50%, #D9F5F9 100%);
+      --gradient-3: linear-gradient(135deg, #BFEEF4 0%, #D9F5F9 50%, #F0DFF3 100%);
+      --gradient-4: linear-gradient(135deg, #D9F5F9 0%, #EFFBFD 50%, #E4F3E4 100%);
+    }
+
+    /* 橙色主题 - 炫彩混色（以橙为主） */
+    body.theme-orange {
+      --primary-color: #FF9800;
+      --primary-light: #FFB74D;
+      --primary-dark: #F57C00;
+
+      --gradient-1: linear-gradient(135deg, #FFEFDB 0%, #FFFCE2 50%, #FFF9F0 100%);
+      --gradient-2: linear-gradient(135deg, #FFF9F0 0%, #FEF2F6 50%, #FFEFDB 100%);
+      --gradient-3: linear-gradient(135deg, #FFE5BF 0%, #FFEFDB 50%, #FFFCE2 100%);
+      --gradient-4: linear-gradient(135deg, #FFEFDB 0%, #FFF9F0 50%, #FFE5DD 100%);
+    }
+
+    /* ========== 基础样式 ========== */
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+      background: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h3 { margin-bottom: 20px; color: #333; text-align: center; }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1400px;
+    }
+
+    /* 3:4 竖版卡片 */
+    .card {
+      width: 360px;
+      height: 480px;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 渐变背景应用 */
+    .gradient-1 { background: var(--gradient-1); }
+    .gradient-2 { background: var(--gradient-2); }
+    .gradient-3 { background: var(--gradient-3); }
+    .gradient-4 { background: var(--gradient-4); }
+
+    /* ========== 封面 ========== */
+    .card-cover { padding: 32px 28px; display: flex; flex-direction: column; }
+    .cover-header { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 20px; }
+
+    .cover-badge {
+      align-self: flex-end;
+      background: #fff;
+      border: 2px solid var(--primary-color);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .cover-tags { display: flex; gap: 8px; margin-bottom: 16px; }
+    .cover-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .cover-title {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #000;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
+    }
+    .cover-title .highlight { color: var(--primary-color); }
+
+    .cover-subtitle {
+      font-size: 15px;
+      color: #333;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* Logo区域 */
+    .cover-logos {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 16px;
+      padding-bottom: 20px;
+    }
+    .cover-logo-item {
+      width: 88px;
+      height: 88px;
+      background: #fff;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .cover-logo-item img { width: 58px; height: 58px; object-fit: contain; }
+
+    /* ========== 内容页 ========== */
+    .card-content { padding: 32px 28px; display: flex; flex-direction: column; }
+    .section-tag {
+      display: inline-block;
+      background: #fff;
+      color: var(--primary-color);
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      border: 1px solid var(--primary-light);
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #000;
+      margin-bottom: 18px;
+      line-height: 1.3;
+    }
+    .section-title .highlight { color: var(--primary-color); }
+
+    .section-text {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #333;
+      font-weight: 500;
+    }
+
+    /* 勾选列表 */
+    .checklist { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .checklist-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .check-icon {
+      color: var(--accent-color);
+      font-size: 18px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .check-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* ========== 要点页 ========== */
+    .card-points { padding: 32px 28px; }
+    .points-section { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 8px 0; }
+    .point-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 14px;
+      border-radius: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .point-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .point-content { flex: 1; }
+    .point-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 4px;
+    }
+    .point-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* ========== 强调高亮页 ========== */
+    .card-highlight { padding: 32px 28px; display: flex; flex-direction: column; }
+    .highlight-box {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 16px;
+      padding: 20px;
+      border-left: 5px solid var(--primary-color);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    .highlight-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: #000;
+      line-height: 1.5;
+    }
+    .highlight-text .accent { color: var(--primary-color); }
+
+    /* ========== 尾页 ========== */
+    .card-end { padding: 32px 28px; display: flex; flex-direction: column; }
+    .end-main { flex: 1; overflow: hidden; }
+    .end-title {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: #000;
+    }
+    .end-cta {
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+    .end-cta-text {
+      font-size: 13px;
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+    .end-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 2px solid rgba(255,255,255,0.5);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .end-logo { height: 28px; }
+    .end-logo img { height: 100%; width: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .end-slogan { font-size: 12px; color: #666; font-weight: 600; }
+  </style>
+</head>
+<body class="theme-blue">
+<!-- 切换配色：改为 theme-pink, theme-green, theme-purple, theme-yellow, theme-cyan, theme-orange -->
+
+<h3>AI资讯图文模板 - 渐变混色版（当前：蓝色系）</h3>
+<div class="container" id="output">
+
+  <!-- 封面示例 -->
+  <div class="card card-cover gradient-1">
+    <div class="cover-header">
+      <div class="cover-badge">🔥 GitHub爆款</div>
+      <div class="cover-tags">
+        <span class="cover-tag">AI工具</span>
+      </div>
+      <h1 class="cover-title">批量生成<span class="highlight">小红书</span><br>知识类图文笔记</h1>
+      <p class="cover-subtitle">10 张图文超详细操作<br>收藏+对照操作，技能Get</p>
+    </div>
+    <div class="cover-logos">
+      <div class="cover-logo-item">
+        <img src="../logos/github-color.png" alt="GitHub">
+      </div>
+      <div class="cover-logo-item">
+        <img src="../logos/claude-color.png" alt="Claude">
+      </div>
+    </div>
+  </div>
+
+  <!-- 内容页示例 -->
+  <div class="card card-content gradient-2">
+    <span class="section-tag">3分钟实现</span>
+    <h2 class="section-title">对标账号<span class="highlight">自动解析</span></h2>
+    <p class="section-text">输入链接，获得视频所有文案并get总结文档</p>
+    <div class="checklist">
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">旋塔插件自动运行采集对标账号数据</p>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">Deepseek精准提示词化身深度分析助手</p>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">爆款教程同款智能体，不用动手公开直接用！</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 要点页示例 -->
+  <div class="card card-points gradient-3">
+    <span class="section-tag">核心亮点 3 条</span>
+    <div class="points-section">
+      <div class="point-item">
+        <span class="point-num">1</span>
+        <div class="point-content">
+          <div class="point-title">自动捕获会话内容</div>
+          <div class="point-desc">所有代码变更、对话、文件操作全部记录</div>
+        </div>
+      </div>
+      <div class="point-item">
+        <span class="point-num">2</span>
+        <div class="point-content">
+          <div class="point-title">AI 智能压缩存储</div>
+          <div class="point-desc">用 agent-sdk 压缩比达 10:1，节省成本</div>
+        </div>
+      </div>
+      <div class="point-item">
+        <span class="point-num">3</span>
+        <div class="point-content">
+          <div class="point-title">语义匹配自动注入</div>
+          <div class="point-desc">新会话智能加载相关历史，无需手动解释</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 高亮页示例 -->
+  <div class="card card-highlight gradient-4">
+    <span class="section-tag">为什么重要</span>
+    <div class="highlight-box">
+      <p class="highlight-text">视频文案<span class="accent">一键提取总结</span></p>
+    </div>
+    <div class="checklist">
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">Coze 免费智能体直接用</p>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">小红书/抖音短视频都可以用！</p>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✓</span>
+        <p class="check-text">视频文案提取+deepseek超全面指令帮你拆解！</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 尾页示例 -->
+  <div class="card card-end gradient-1">
+    <div class="end-main">
+      <h3 class="end-title">Coze爆款工作流<br>搭建教程合集</h3>
+      <div class="checklist">
+        <div class="checklist-item">
+          <span class="check-icon">✓</span>
+          <p class="check-text">用coze实现爆款封面批量</p>
+        </div>
+        <div class="checklist-item">
+          <span class="check-icon">✓</span>
+          <p class="check-text">用Coze提取视频文案</p>
+        </div>
+        <div class="checklist-item">
+          <span class="check-icon">✓</span>
+          <p class="check-text">用Coze批量采集小红书评论</p>
+        </div>
+      </div>
+      <div class="end-cta"><span class="end-cta-text">💬 你想用 AI 解决什么重复性工作？</span></div>
+    </div>
+    <div class="end-footer">
+      <div class="end-logo"><img src="../logos/OfoxAI-dark.png" alt="OFOX AI"></div>
+      <span class="end-slogan">ofox.ai 你的AI伙伴</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

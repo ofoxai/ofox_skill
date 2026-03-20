@@ -15,34 +15,32 @@ metadata:
 
 ## Prerequisites
 
-本 skill 依赖两个配套仓库，agent 首次使用前必须克隆：
+graphic-engine 和 content-library 已内置在本 skill 目录下，无需额外克隆。
+
+首次使用需安装截图依赖：
 
 ```bash
-# 图文渲染引擎（模板 + 截图）
-git clone https://github.com/ofoxai/graphic-engine.git
-cd graphic-engine && npm install && cd ..
-
-# 内容库（文案索引 + 待发布内容）
-git clone https://github.com/ofoxai/content-library.git
+cd skills/ofox-zine-engine/graphic-engine && npm install
 ```
 
-克隆后目录结构：
+目录结构：
 
 ```
-workspace/
-├── graphic-engine/       ← 渲染引擎
+skills/ofox-zine-engine/
+├── SKILL.md
+├── references/
+├── graphic-engine/       ← 渲染引擎（内置）
 │   ├── templates/engine.html
 │   ├── assets/logos/
-│   ├── output/ofox/zine/
+│   ├── output/ofox/zine/   ← 运行时自动创建
 │   └── screenshot.js
-├── content-library/      ← 内容库
-│   ├── index.md
-│   ├── pending/
-│   └── personas.md
-└── ofox_skill/           ← 本 skill 仓库
+└── content-library/      ← 内容库（内置）
+    ├── index.md
+    ├── pending/
+    └── personas.md
 ```
 
-**路径约定：** 下文所有路径基于此结构。`graphic-engine/` 和 `content-library/` 必须在同一父目录下。
+**路径约定：** 下文 `graphic-engine/` 和 `content-library/` 均指本 skill 目录下的子目录。
 
 ## Usage
 
@@ -89,16 +87,16 @@ workspace/
 ### 关键路径
 
 ```
-content-library/              ← git clone https://github.com/ofoxai/content-library.git
-├── index.md                  ← 索引（只用 Edit 工具！）
-├── pending/YYMMDD.md         ← 文案文件
-└── personas.md               ← 人设库
-
-graphic-engine/               ← git clone https://github.com/ofoxai/graphic-engine.git
-├── templates/engine.html     ← 统一渲染模板（theme: "zine"）
-├── assets/logos/             ← Logo 资源
-├── output/ofox/zine/         ← Zine 输出目录
-└── screenshot.js             ← 截图脚本（需 npm install）
+skills/ofox-zine-engine/
+├── content-library/          ← 内容库（内置）
+│   ├── index.md              ← 索引（只用 Edit 工具！）
+│   ├── pending/YYMMDD.md     ← 文案文件
+│   └── personas.md           ← 人设库
+└── graphic-engine/           ← 渲染引擎（内置）
+    ├── templates/engine.html ← 统一模板（theme: "zine"）
+    ├── assets/logos/         ← Logo 资源
+    ├── output/ofox/zine/     ← Zine 输出目录
+    └── screenshot.js         ← 截图脚本
 ```
 
 ---
@@ -188,7 +186,7 @@ graphic-engine/               ← git clone https://github.com/ofoxai/graphic-en
 ### Step 4: 截图（等用户确认）
 
 ```bash
-cd ../graphic-engine && node screenshot.js output/ofox/zine/{目录}/{文件}.html
+cd graphic-engine && node screenshot.js output/ofox/zine/{目录}/{文件}.html
 ```
 
 ---

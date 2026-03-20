@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI资讯图文模板 V2 - 新布局</title>
+  <!--
+    SECURITY NOTE: This is an offline rendering template for Puppeteer screenshot generation.
+    All data comes from hardcoded JSON within this file, never from user input.
+    innerHTML usage is intentional for complex layout rendering of trusted template data.
+  -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+      background: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h3 { margin-bottom: 20px; color: #333; text-align: center; }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      justify-content: center;
+      max-width: 1400px;
+    }
+
+    .card {
+      width: 360px;
+      height: 480px;
+      border-radius: 0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================
+       V2 布局 - 结构重设计
+       配色沿用经典铜橙 #C65D3B / #E07A52
+       ============================================ */
+
+    /* --- 封面：logo横条在顶 + 大标题居中 + 关键词pill底栏 --- */
+    .card-cover {
+      background: #FDF8F3;
+      color: #1a1a1a;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .cover-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px 12px;
+      border-bottom: 1px solid rgba(198,93,59,0.1);
+    }
+    .cover-logos-strip {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .cover-logo-sm {
+      width: 36px; height: 36px;
+      background: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .cover-logo-sm img { width: 24px; height: 24px; object-fit: contain; }
+    .cover-star-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .cover-star-badge .star-label {
+      padding: 4px 8px;
+      border-right: 1px solid #d0d7de;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      color: #666;
+    }
+    .cover-star-badge .star-label .star-icon { color: #d4a72c; }
+    .cover-star-badge .star-count { padding: 4px 8px; font-weight: 600; color: #1f2328; }
+
+    .cover-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 28px;
+    }
+    .cover-tag-line {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .cover-tag {
+      display: inline-block;
+      background: #C65D3B;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cover-title {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+    }
+    .cover-subtitle {
+      font-size: 15px;
+      color: #888;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    .cover-bottom-bar {
+      display: flex;
+      gap: 8px;
+      padding: 14px 24px;
+      border-top: 1px solid rgba(198,93,59,0.1);
+      flex-wrap: wrap;
+    }
+    .cover-kw-pill {
+      background: rgba(198,93,59,0.08);
+      color: #C65D3B;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* --- 引子页：左侧色带 + 问题/答案/图表 --- */
+    .card-intro {
+      background: #fff;
+      color: #1a1a1a;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    .intro-accent {
+      width: 6px;
+      background: linear-gradient(180deg, #C65D3B, #E07A52);
+      flex-shrink: 0;
+    }
+    .intro-body {
+      flex: 1;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* --- 要点页：2x2 网格卡片 --- */
+    .card-points-v2 {
+      background: #FDF8F3;
+      color: #1a1a1a;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .points-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .point-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .point-card-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .point-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .point-card-desc {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    /* 要点 5-6 条时用紧凑列表 */
+    .points-compact {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .point-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #fff;
+      padding: 12px 14px;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .point-row-num {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, #C65D3B, #E07A52);
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .point-row-title { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+    .point-row-desc { font-size: 11px; color: #888; line-height: 1.4; margin-top: 1px; }
+
+    /* --- 引用页：大装饰引号 + 居中排版 --- */
+    .card-quote-v2 {
+      background: #fff;
+      color: #1a1a1a;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .quote-mark {
+      font-size: 72px;
+      font-weight: 800;
+      color: rgba(198,93,59,0.12);
+      line-height: 1;
+      margin-bottom: 8px;
+      font-family: Georgia, serif;
+    }
+    .quote-v2-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.5;
+      max-width: 280px;
+    }
+    .quote-v2-source {
+      font-size: 13px;
+      color: #C65D3B;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+    .quote-v2-note {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.7;
+      margin-top: 20px;
+      text-align: left;
+      width: 100%;
+      padding: 16px;
+      background: #FDF8F3;
+      border-radius: 12px;
+    }
+
+    /* --- 洞察页：横向pill标签 --- */
+    .card-insight-v2 {
+      background: #FDF8F3;
+      color: #1a1a1a;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .insight-core-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 4px solid #C65D3B;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .insight-core-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: #C65D3B;
+      line-height: 1.45;
+    }
+    .insight-details-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .insight-detail-row {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .insight-detail-label {
+      flex-shrink: 0;
+      background: #C65D3B;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .insight-detail-text {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+    .insight-tip-bar {
+      margin-top: auto;
+      padding: 10px 14px;
+      background: rgba(198,93,59,0.05);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #999;
+      line-height: 1.5;
+    }
+
+    /* --- 尾页：居中品牌栏 --- */
+    .card-end-v2 {
+      background: #FDF8F3;
+      color: #1a1a1a;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .end-v2-main { flex: 1; overflow: hidden; }
+    .end-v2-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #1a1a1a;
+    }
+    .end-v2-cta {
+      margin-top: 14px;
+      padding: 10px;
+      background: rgba(198,93,59,0.06);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .end-v2-cta-text { font-size: 12px; color: #C65D3B; font-weight: 500; }
+    .end-v2-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .end-v2-footer img { height: 28px; width: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .end-v2-footer .end-slogan { font-size: 12px; color: #888; }
+
+    /* 通用 */
+    .section-tag { display: inline-block; background: #C65D3B; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 16px; align-self: flex-start; }
+    .section-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; line-height: 1.4; }
+    .section-text { font-size: 14px; line-height: 1.8; color: #444; }
+
+  </style>
+</head>
+<body>
+
+<h3>V2 布局预览</h3>
+<div class="container" id="output"></div>
+
+<script>
+// [TEMPLATE DATA] All content below is hardcoded for offline Puppeteer rendering.
+// No user-supplied input is processed. innerHTML usage is for trusted static template content only.
+
+var defaultData = {
+  "tags": ["\ud83e\uddec \u81ea\u6211\u8fdb\u5316 Agent"],
+  "title": "Hermes Agent<br>\u8d8a\u7528\u8d8a\u806a\u660e\u7684 AI \u52a9\u624b",
+  "subtitle": "NousResearch \u00b7 5.4k\u2b50 \u00b7 MIT \u5f00\u6e90",
+  "starBadge": "5.4k",
+  "logos": [
+    { "name": "GitHub", "url": "assets/logos/github-black.png" },
+    { "name": "NousResearch", "url": "assets/logos/openrouter-color.png" }
+  ],
+  "keywords": ["\u81ea\u6211\u8fdb\u5316", "\u6301\u4e45\u8bb0\u5fc6", "\u591a\u6a21\u578b", "\u5f00\u6e90"],
+  "intro": {
+    "tag": "\u73b0\u72b6",
+    "question": "\u73b0\u5728\u7684 Agent \u90fd\u662f\u4e00\u6b21\u6027\u7684",
+    "answer": "\u7ed9\u4efb\u52a1\uff0c\u505a\u5b8c\uff0c\u7ed3\u675f\u3002\u4e0b\u6b21\u540c\u6837\u7684\u95ee\u9898\uff0c\u4ece\u5934\u6765\u8fc7\u3002\u6ca1\u6709\u7ecf\u9a8c\u79ef\u7d2f\uff0c\u6bcf\u6b21\u90fd\u50cf\u7b2c\u4e00\u5929\u4e0a\u73ed\u7684\u5b9e\u4e60\u751f\u3002",
+    "flowChart": {
+      "title": "Hermes Agent \u7684\u5dee\u5f02",
+      "oldLabel": "\u666e\u901a Agent",
+      "oldSteps": ["\u63a5\u4efb\u52a1", "\u6267\u884c", "\u8fd4\u56de", "\u9057\u5fd8"],
+      "newLabel": "Hermes Agent",
+      "newSteps": ["\u63a5\u4efb\u52a1", "\u6267\u884c", "\u6c89\u6dc0\u6280\u80fd", "\u4e0b\u6b21\u590d\u7528"]
+    }
+  },
+  "points": [
+    { "icon": "\ud83e\udde0", "title": "\u81ea\u52a8\u751f\u6210\u6280\u80fd", "desc": "\u89e3\u51b3\u590d\u6742\u95ee\u9898\u540e\u81ea\u52a8\u5199\u6210 SKILL.md" },
+    { "icon": "\ud83d\udcac", "title": "\u591a\u6e20\u9053\u901a\u4fe1", "desc": "Telegram/Slack/Discord/WhatsApp" },
+    { "icon": "\ud83d\udd04", "title": "\u6a21\u578b\u968f\u610f\u5207", "desc": "OpenRouter 200+\u6a21\u578b\uff0c\u4e0d\u7ed1\u5382\u5546" },
+    { "icon": "\ud83d\udcb0", "title": "$5/\u6708\u5c31\u80fd\u8dd1", "desc": "VPS \u90e8\u7f72\uff0cModal \u65e0\u670d\u52a1\u5668\u6a21\u5f0f" }
+  ],
+  "quotes": [
+    {
+      "tag": "\ud83d\udca1 \u6838\u5fc3\u6d1e\u5bdf",
+      "text": "Agent \u7684\u6838\u5fc3\u7ade\u4e89\u529b\u4e0d\u662f\u6a21\u578b\u80fd\u529b\uff0c\u800c\u662f\u7ecf\u9a8c\u79ef\u7d2f",
+      "source": "\u6280\u80fd\u6c89\u6dc0 + \u6301\u4e45\u8bb0\u5fc6 = \u590d\u5229\u6548\u5e94",
+      "note": "Hermes Agent \u7684\u6280\u80fd\u9075\u5faa agentskills.io \u5f00\u653e\u6807\u51c6\u3002\n\u4f60\u7684 Agent \u5b66\u4f1a\u7684\u6280\u80fd\uff0c\u53ef\u4ee5\u76f4\u63a5\u5bfc\u51fa\u7ed9\u5176\u4ed6\u4eba\u7528\u3002"
+    }
+  ],
+  "insight": {
+    "tag": "\u9879\u76ee\u4fe1\u606f",
+    "core": "NousResearch \u51fa\u54c1\uff0cMIT \u534f\u8bae\uff0c73 \u4f4d\u8d21\u732e\u8005",
+    "details": [
+      { "bold": "\u6267\u884c\u540e\u7aef", "text": "Local / Docker / SSH / Singularity / Modal" },
+      { "bold": "\u8bb0\u5fc6\u673a\u5236", "text": "Honcho \u8fa9\u8bc1\u5efa\u6a21 + FTS5 \u5168\u6587\u641c\u7d22" },
+      { "bold": "\u6280\u80fd\u6807\u51c6", "text": "agentskills.io \u5f00\u653e\u6807\u51c6" }
+    ]
+  },
+  "takeaway": {
+    "title": "\u4e00\u884c\u547d\u4ee4\u5b89\u88c5",
+    "codeStyle": true,
+    "items": [
+      { "text": "curl -fsSL https://raw.githubusercontent.com/.../install.sh | bash", "note": "\u81ea\u52a8\u5b89\u88c5 Python 3.11 + \u6240\u6709\u4f9d\u8d56" },
+      { "text": "hermes model", "note": "\u5207\u6362\u6a21\u578b\uff08OpenRouter / Kimi / GLM\uff09" }
+    ],
+    "verifyCommands": ["hermes chat  # \u5f00\u59cb\u5bf9\u8bdd", "\u901a\u8fc7 ofox.ai \u63a5\u5165\u591a\u6a21\u578b"]
+  },
+  "footer": {
+    "cta": "\ud83d\udcac \u4f60\u7528\u7684 AI \u5de5\u5177\uff0c\u6709\u54ea\u4e2a\u662f\u8d8a\u7528\u8d8a\u597d\u7528\u7684\uff1f",
+    "slogan": "ofox.ai \u4f60\u7684AI\u4f19\u4f34"
+  }
+};
+
+// HTML escape for trusted template data
+function esc(str) {
+  if (!str) return '';
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+
+function render(customData) {
+  var data = customData || defaultData;
+  var pages = [];
+
+  pages.push({ type: 'cover', data: data });
+  if (data.intro) pages.push({ type: 'intro', data: data.intro });
+
+  if (data.pointsPages && data.pointsPages.length > 0) {
+    data.pointsPages.forEach(function(pp) { pages.push({ type: 'points', data: pp }); });
+  } else if (data.points && data.points.length > 0) {
+    pages.push({ type: 'points', data: { label: data.pointsLabel || '\u8981\u70b9', count: data.points.length, items: data.points } });
+  }
+
+  if (data.quotes && data.quotes.length > 0) {
+    data.quotes.forEach(function(q) { pages.push({ type: 'quote', data: q }); });
+  }
+  if (data.insight) pages.push({ type: 'insight', data: data.insight });
+  pages.push({ type: 'end', data: { takeaway: data.takeaway, footer: data.footer || {} } });
+
+  var output = document.getElementById('output');
+  output.textContent = '';
+  pages.forEach(function(page) {
+    var node;
+    switch (page.type) {
+      case 'cover': node = buildCover(page.data); break;
+      case 'intro': node = buildIntro(page.data); break;
+      case 'points': node = buildPoints(page.data); break;
+      case 'quote': node = buildQuote(page.data); break;
+      case 'insight': node = buildInsight(page.data); break;
+      case 'end': node = buildEnd(page.data); break;
+    }
+    if (node) output.appendChild(node);
+  });
+  adjustTitleFontSize();
+}
+
+function adjustTitleFontSize() {
+  document.querySelectorAll('.cover-title').forEach(function(title) {
+    var fs = parseInt(getComputedStyle(title).fontSize) || 38;
+    var slh = fs * 1.25;
+    while (title.scrollHeight > slh * 1.5 && fs > 22) { fs -= 1; title.style.fontSize = fs + 'px'; }
+  });
+}
+
+/* ============ 封面 ============ */
+function buildCover(data) {
+  var card = document.createElement('div');
+  card.className = 'card card-cover';
+
+  // 顶部横条
+  var topBar = document.createElement('div');
+  topBar.className = 'cover-top-bar';
+  var logoStrip = document.createElement('div');
+  logoStrip.className = 'cover-logos-strip';
+  if (data.logos) {
+    data.logos.forEach(function(logo) {
+      var item = document.createElement('div');
+      item.className = 'cover-logo-sm';
+      var img = document.createElement('img');
+      img.src = logo.url; img.alt = logo.name;
+      img.onerror = function() { this.parentElement.textContent = logo.name.charAt(0); this.parentElement.style.cssText = 'font-weight:700;color:#C65D3B;font-size:16px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;'; };
+      item.appendChild(img);
+      logoStrip.appendChild(item);
+    });
+  }
+  topBar.appendChild(logoStrip);
+
+  if (data.starBadge) {
+    var badge = document.createElement('div');
+    badge.className = 'cover-star-badge';
+    var label = document.createElement('span');
+    label.className = 'star-label';
+    var starIcon = document.createElement('span');
+    starIcon.className = 'star-icon'; starIcon.textContent = '\u2605';
+    label.appendChild(starIcon);
+    label.appendChild(document.createTextNode(' Star'));
+    badge.appendChild(label);
+    var count = document.createElement('span');
+    count.className = 'star-count'; count.textContent = data.starBadge;
+    badge.appendChild(count);
+    topBar.appendChild(badge);
+  }
+  card.appendChild(topBar);
+
+  // 中央
+  var center = document.createElement('div');
+  center.className = 'cover-center';
+  if (data.tags) {
+    var tagLine = document.createElement('div');
+    tagLine.className = 'cover-tag-line';
+    (Array.isArray(data.tags) ? data.tags : [data.tags]).forEach(function(t) {
+      var span = document.createElement('span');
+      span.className = 'cover-tag'; span.textContent = t;
+      tagLine.appendChild(span);
+    });
+    center.appendChild(tagLine);
+  }
+  var h1 = document.createElement('h1');
+  h1.className = 'cover-title';
+  // title may contain <br> for line breaks - this is trusted template data
+  h1.innerHTML = data.title;
+  center.appendChild(h1);
+  if (data.subtitle) {
+    var sub = document.createElement('p');
+    sub.className = 'cover-subtitle'; sub.textContent = data.subtitle;
+    center.appendChild(sub);
+  }
+  card.appendChild(center);
+
+  // 底部关键词
+  if (data.keywords && data.keywords.length > 0) {
+    var bottomBar = document.createElement('div');
+    bottomBar.className = 'cover-bottom-bar';
+    data.keywords.forEach(function(kw) {
+      var pill = document.createElement('span');
+      pill.className = 'cover-kw-pill'; pill.textContent = kw;
+      bottomBar.appendChild(pill);
+    });
+    card.appendChild(bottomBar);
+  }
+  return card;
+}
+
+/* ============ 引子页 ============ */
+function buildIntro(data) {
+  var card = document.createElement('div');
+  card.className = 'card card-intro';
+
+  var accent = document.createElement('div');
+  accent.className = 'intro-accent';
+  card.appendChild(accent);
+
+  var body = document.createElement('div');
+  body.className = 'intro-body';
+
+  var tag = document.createElement('span');
+  tag.className = 'section-tag'; tag.textContent = data.tag || '\u95ee\u9898';
+  body.appendChild(tag);
+
+  var title = document.createElement('h2');
+  title.className = 'section-title'; title.textContent = data.question;
+  body.appendChild(title);
+
+  var text = document.createElement('p');
+  text.className = 'section-text'; text.textContent = data.answer;
+  body.appendChild(text);
+
+  if (data.flowChart) {
+    var wrap = document.createElement('div');
+    wrap.style.marginTop = '16px';
+    // Build flowchart using trusted template data
+    var html = '<div style="width:100%;padding:12px;background:#FDF8F3;border-radius:12px;">'
+      + '<div style="text-align:center;font-size:11px;font-weight:600;color:#C65D3B;margin-bottom:12px;">' + esc(data.flowChart.title) + '</div>'
+      + '<div style="display:flex;gap:10px;">'
+      + '<div style="flex:1;padding:10px;border-radius:10px;background:#fff;border:1px dashed #ddd;">'
+      + '<div style="font-size:10px;font-weight:600;margin-bottom:6px;color:#999;">\u274c ' + esc(data.flowChart.oldLabel) + '</div>'
+      + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#888;flex-wrap:wrap;justify-content:center;">'
+      + data.flowChart.oldSteps.map(function(s,i){ return (i>0?'<span style="color:#ccc;">\u2192</span>':'') + '<span style="background:#f5f5f5;padding:3px 6px;border-radius:4px;">' + esc(s) + '</span>'; }).join('')
+      + '</div></div>'
+      + '<div style="flex:1;padding:10px;border-radius:10px;background:rgba(198,93,59,0.03);border:2px solid #C65D3B;">'
+      + '<div style="font-size:10px;font-weight:600;margin-bottom:6px;color:#C65D3B;">\u2705 ' + esc(data.flowChart.newLabel) + '</div>'
+      + '<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#C65D3B;flex-wrap:wrap;justify-content:center;">'
+      + data.flowChart.newSteps.map(function(s,i){ return (i>0?'<span>\u2192</span>':'') + '<span style="background:rgba(198,93,59,0.1);padding:3px 6px;border-radius:4px;">' + esc(s) + '</span>'; }).join('')
+      + '</div></div></div></div>';
+    wrap.innerHTML = html;
+    body.appendChild(wrap);
+  } else if (data.workflow) {
+    var wrap2 = document.createElement('div');
+    wrap2.style.marginTop = '16px';
+    var steps = data.workflow.steps || [];
+    var wHtml = '<div style="width:100%;padding:16px;background:#FDF8F3;border-radius:12px;">'
+      + (data.workflow.title ? '<div style="text-align:center;font-size:12px;font-weight:600;color:#C65D3B;margin-bottom:16px;">' + esc(data.workflow.title) + '</div>' : '')
+      + '<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">'
+      + steps.map(function(step,i){ return '<div style="display:flex;align-items:center;gap:8px;"><div style="background:#fff;border:2px solid #C65D3B;border-radius:8px;padding:8px 12px;text-align:center;min-width:60px;"><div style="font-size:16px;margin-bottom:2px;">' + esc(step.icon||'\ud83d\udccb') + '</div><div style="font-size:11px;font-weight:600;color:#333;">' + esc(step.label) + '</div></div>' + (i<steps.length-1?'<div style="color:#C65D3B;font-size:16px;font-weight:bold;">\u2192</div>':'') + '</div>'; }).join('')
+      + '</div></div>';
+    wrap2.innerHTML = wHtml;
+    body.appendChild(wrap2);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+/* ============ 要点页 - 2x2 网格 ============ */
+function buildPoints(data) {
+  var card = document.createElement('div');
+  card.className = 'card card-points-v2';
+
+  var tag = document.createElement('span');
+  tag.className = 'section-tag';
+  tag.textContent = (data.label || '\u8981\u70b9') + (data.count ? ' ' + data.count + ' \u6761' : '');
+  card.appendChild(tag);
+
+  var items = data.items;
+  if (items.length <= 4) {
+    var grid = document.createElement('div');
+    grid.className = 'points-grid';
+    items.forEach(function(p) {
+      var pc = document.createElement('div'); pc.className = 'point-card';
+      var icon = document.createElement('div'); icon.className = 'point-card-icon'; icon.textContent = p.icon || '\u25cf'; pc.appendChild(icon);
+      var t = document.createElement('div'); t.className = 'point-card-title'; t.textContent = p.title; pc.appendChild(t);
+      var d = document.createElement('div'); d.className = 'point-card-desc'; d.textContent = p.desc; pc.appendChild(d);
+      grid.appendChild(pc);
+    });
+    card.appendChild(grid);
+  } else {
+    var list = document.createElement('div'); list.className = 'points-compact';
+    var start = data.startNum || 1;
+    items.forEach(function(p,i) {
+      var row = document.createElement('div'); row.className = 'point-row';
+      var num = document.createElement('span'); num.className = 'point-row-num';
+      if (p.icon) { num.textContent = p.icon; num.style.fontSize = '16px'; } else { num.textContent = start+i; }
+      row.appendChild(num);
+      var content = document.createElement('div');
+      var t = document.createElement('div'); t.className = 'point-row-title'; t.textContent = p.title; content.appendChild(t);
+      var d = document.createElement('div'); d.className = 'point-row-desc'; d.textContent = p.desc; content.appendChild(d);
+      row.appendChild(content);
+      list.appendChild(row);
+    });
+    card.appendChild(list);
+  }
+  return card;
+}
+
+/* ============ 引用页 - 大引号居中 ============ */
+function buildQuote(data) {
+  var card = document.createElement('div');
+  card.className = 'card card-quote-v2';
+
+  var mark = document.createElement('div');
+  mark.className = 'quote-mark'; mark.textContent = '\u201c';
+  card.appendChild(mark);
+
+  var text = document.createElement('p');
+  text.className = 'quote-v2-text'; text.textContent = data.text;
+  card.appendChild(text);
+
+  if (data.source) {
+    var src = document.createElement('p');
+    src.className = 'quote-v2-source'; src.textContent = '\u2014 ' + data.source;
+    card.appendChild(src);
+  }
+  if (data.note) {
+    var note = document.createElement('div');
+    note.className = 'quote-v2-note';
+    data.note.split('\n').forEach(function(part, i) {
+      note.appendChild(document.createTextNode(part));
+      if (i < data.note.split('\n').length - 1) note.appendChild(document.createElement('br'));
+    });
+    card.appendChild(note);
+  }
+  return card;
+}
+
+/* ============ 洞察页 - 横向pill ============ */
+function buildInsight(data) {
+  var card = document.createElement('div');
+  card.className = 'card card-insight-v2';
+
+  var tag = document.createElement('span');
+  tag.className = 'section-tag'; tag.textContent = data.tag || '\u80cc\u540e\u903b\u8f91';
+  card.appendChild(tag);
+
+  var coreBox = document.createElement('div'); coreBox.className = 'insight-core-box';
+  var coreText = document.createElement('p'); coreText.className = 'insight-core-text'; coreText.textContent = data.core;
+  coreBox.appendChild(coreText);
+  card.appendChild(coreBox);
+
+  if (data.details && data.details.length > 0) {
+    var wrap = document.createElement('div'); wrap.className = 'insight-details-wrap';
+    data.details.forEach(function(d) {
+      var row = document.createElement('div'); row.className = 'insight-detail-row';
+      var label = document.createElement('span'); label.className = 'insight-detail-label'; label.textContent = d.bold;
+      row.appendChild(label);
+      var txt = document.createElement('span'); txt.className = 'insight-detail-text'; txt.textContent = d.text;
+      row.appendChild(txt);
+      wrap.appendChild(row);
+    });
+    card.appendChild(wrap);
+  }
+
+  if (data.tip) {
+    var tip = document.createElement('div'); tip.className = 'insight-tip-bar'; tip.textContent = '\ud83d\udca1 ' + data.tip;
+    card.appendChild(tip);
+  }
+  return card;
+}
+
+/* ============ 尾页 ============ */
+function buildEnd(data) {
+  var takeaway = data.takeaway, footer = data.footer;
+  var card = document.createElement('div');
+  card.className = 'card card-end-v2';
+
+  var main = document.createElement('div'); main.className = 'end-v2-main';
+
+  if (takeaway) {
+    var title = document.createElement('h3');
+    title.className = 'end-v2-title'; title.textContent = takeaway.title;
+    main.appendChild(title);
+
+    if (takeaway.codeStyle) {
+      var codeWrap = document.createElement('div');
+      codeWrap.style.cssText = 'background:#1e1e1e;border-radius:12px;padding:14px;font-family:"SF Mono",Consolas,monospace;';
+      // Terminal dots + code lines from trusted template data
+      var cHtml = '<div style="display:flex;gap:6px;margin-bottom:10px;">'
+        + '<span style="width:10px;height:10px;border-radius:50%;background:#ff5f56;"></span>'
+        + '<span style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;"></span>'
+        + '<span style="width:10px;height:10px;border-radius:50%;background:#27ca40;"></span></div>';
+      takeaway.items.forEach(function(item) {
+        cHtml += '<div style="margin-bottom:8px;"><div style="color:#888;font-size:9px;margin-bottom:2px;"># ' + esc(item.note) + '</div><div style="color:#4EC9B0;font-size:11px;word-break:break-all;"><span style="color:#C586C0;">$</span> ' + esc(item.text) + '</div></div>';
+      });
+      if (takeaway.verifyCommands) {
+        cHtml += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;"><div style="color:#888;font-size:9px;margin-bottom:6px;"># \u5b89\u88c5\u6210\u529f\u540e\u53ef\u7528\u547d\u4ee4\uff1a</div>';
+        takeaway.verifyCommands.forEach(function(cmd) { cHtml += '<div style="color:#6A9955;font-size:10px;margin-bottom:2px;">' + esc(cmd) + '</div>'; });
+        cHtml += '</div>';
+      }
+      codeWrap.innerHTML = cHtml;
+      main.appendChild(codeWrap);
+    } else {
+      var list = document.createElement('div');
+      list.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+      takeaway.items.forEach(function(item) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;gap:10px;align-items:flex-start;background:#fff;padding:12px;border-radius:10px;';
+        var icon = document.createElement('span'); icon.style.cssText = 'color:#C65D3B;font-size:14px;font-weight:700;'; icon.textContent = '\u2713';
+        row.appendChild(icon);
+        var w = document.createElement('div');
+        var ct = document.createElement('p'); ct.style.cssText = 'font-size:13px;line-height:1.4;color:#1a1a1a;font-weight:500;'; ct.textContent = item.text; w.appendChild(ct);
+        if (item.note) { var cn = document.createElement('p'); cn.style.cssText = 'font-size:11px;color:#888;margin-top:2px;'; cn.textContent = item.note; w.appendChild(cn); }
+        row.appendChild(w); list.appendChild(row);
+      });
+      main.appendChild(list);
+    }
+  }
+
+  if (footer.cta) {
+    var cta = document.createElement('div'); cta.className = 'end-v2-cta';
+    var ctaText = document.createElement('span'); ctaText.className = 'end-v2-cta-text'; ctaText.textContent = footer.cta;
+    cta.appendChild(ctaText); main.appendChild(cta);
+  }
+  card.appendChild(main);
+
+  var ft = document.createElement('div'); ft.className = 'end-v2-footer';
+  var logoImg = document.createElement('img'); logoImg.src = 'assets/logos/OfoxAI-dark.png'; logoImg.alt = 'OFOX AI';
+  ft.appendChild(logoImg);
+  var slogan = document.createElement('span'); slogan.className = 'end-slogan'; slogan.textContent = footer.slogan || 'ofox.ai \u4f60\u7684AI\u4f19\u4f34';
+  ft.appendChild(slogan);
+  card.appendChild(ft);
+  return card;
+}
+
+render();
+</script>
+
+</body>
+</html>
