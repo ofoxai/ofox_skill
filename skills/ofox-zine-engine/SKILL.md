@@ -13,6 +13,37 @@ metadata:
 
 从 AI 行业热点采集到 Zine 剪报风图文卡片输出的完整生产流程。
 
+## Prerequisites
+
+本 skill 依赖两个配套仓库，agent 首次使用前必须克隆：
+
+```bash
+# 图文渲染引擎（模板 + 截图）
+git clone https://github.com/ofoxai/graphic-engine.git
+cd graphic-engine && npm install && cd ..
+
+# 内容库（文案索引 + 待发布内容）
+git clone https://github.com/ofoxai/content-library.git
+```
+
+克隆后目录结构：
+
+```
+workspace/
+├── graphic-engine/       ← 渲染引擎
+│   ├── templates/engine.html
+│   ├── assets/logos/
+│   ├── output/ofox/zine/
+│   └── screenshot.js
+├── content-library/      ← 内容库
+│   ├── index.md
+│   ├── pending/
+│   └── personas.md
+└── ofox_skill/           ← 本 skill 仓库
+```
+
+**路径约定：** 下文所有路径基于此结构。`graphic-engine/` 和 `content-library/` 必须在同一父目录下。
+
 ## Usage
 
 ```
@@ -58,16 +89,16 @@ metadata:
 ### 关键路径
 
 ```
-content_library/              ← 内容库
+content-library/              ← git clone https://github.com/ofoxai/content-library.git
 ├── index.md                  ← 索引（只用 Edit 工具！）
 ├── pending/YYMMDD.md         ← 文案文件
 └── personas.md               ← 人设库
 
-graphic-engine/               ← 图文引擎（独立项目）
+graphic-engine/               ← git clone https://github.com/ofoxai/graphic-engine.git
 ├── templates/engine.html     ← 统一渲染模板（theme: "zine"）
 ├── assets/logos/             ← Logo 资源
 ├── output/ofox/zine/         ← Zine 输出目录
-└── screenshot.js             ← 截图脚本
+└── screenshot.js             ← 截图脚本（需 npm install）
 ```
 
 ---
@@ -132,7 +163,7 @@ graphic-engine/               ← 图文引擎（独立项目）
 输入：ID = YYMMDD-NN
 
 推导：
-  文案 = content_library/pending/{YYMMDD}.md → "## {ID}" 章节
+  文案 = content-library/pending/{YYMMDD}.md → "## {ID}" 章节
   主题 = 从标题提取
   模板 = graphic-engine/templates/engine.html
   JSON = theme: "zine"
@@ -157,7 +188,7 @@ graphic-engine/               ← 图文引擎（独立项目）
 ### Step 4: 截图（等用户确认）
 
 ```bash
-cd graphic-engine && node screenshot.js output/ofox/zine/{目录}/{文件}.html
+cd ../graphic-engine && node screenshot.js output/ofox/zine/{目录}/{文件}.html
 ```
 
 ---
