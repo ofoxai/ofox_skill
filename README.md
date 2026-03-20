@@ -7,7 +7,8 @@ ofox 团队共用 Agent Skills 库，遵循 [Agent Skills 规范](https://agents
 ```
 ofox_skill/
 ├── skills/                   # Skills 集合
-│   └── ofox-cover/           # 公众号封面生成器
+│   ├── ofox-cover/           # 公众号封面生成器
+│   └── ofox-zine-engine/     # AI 资讯 Zine 图文引擎
 ├── template/                 # Skill 模板（新建 skill 时参考）
 ├── LICENSE
 └── README.md
@@ -18,6 +19,7 @@ ofox_skill/
 | Skill | 描述 | 分类 |
 |-------|------|------|
 | [ofox-cover](skills/ofox-cover/) | 公众号封面生成器 - 黑白手绘漫画风格，小狐狸主角 | Creative & Design |
+| [ofox-zine-engine](skills/ofox-zine-engine/) | AI 资讯 Zine 图文引擎 - 采集→评估→核实→文案→Zine渲染→质量门禁 | Content Creation |
 
 ### ofox-cover
 
@@ -34,6 +36,23 @@ ofox_skill/
 /ofox-cover 文章标题或主题
 /ofox-cover 文章标题 --scene "狐狸在做什么"
 /ofox-cover path/to/article.md
+```
+
+### ofox-zine-engine
+
+AI 资讯内容生产全流程引擎，从热点采集到 Zine 剪报风图文卡片输出。
+
+**特点：**
+- 完整内容流水线：采集 → 评估 → 数据核实 → 文案生成 → 入库
+- Zine 剪报风模块化组装：6大模块按内容特征自由组合
+- 内置质量门禁：溢出检查 + 敏感词扫描 + 数据格式验证
+- 适配小红书等平台，含敏感词替换规则
+
+**使用：**
+```
+今日热点                      # 采集+评估
+生成 1 3                     # 生成文案并入库
+/graphic-zine 260319-01      # Zine 图文渲染
 ```
 
 ## 安装
